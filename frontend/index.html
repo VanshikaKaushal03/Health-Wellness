@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthApp - On-demand Health Expertise</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/in.css"> 
+
+    <style>
+      :root {
+          --theme-blue: #0d6efd;
+          --theme-blue-dark: #0a58ca;
+          --theme-yellow: #ffc107;
+      }
+      /* Override .btn-primary-custom */
+      .btn-primary-custom {
+          background-color: var(--theme-blue) !important;
+          border-color: var(--theme-blue) !important;
+      }
+      .btn-primary-custom:hover {
+          background-color: var(--theme-blue-dark) !important;
+          border-color: var(--theme-blue-dark) !important;
+      }
+      /* Override logo/text color */
+      .logo, .text-lavender, .step-card-custom i, .expert-card-custom .card-footer span {
+          color: var(--theme-blue) !important;
+      }
+      /* Override borders */
+      .border-bottom-lavender {
+          border-bottom-color: var(--theme-blue) !important;
+      }
+      /* Change lime to yellow */
+      .text-lime {
+          color: var(--theme-yellow) !important;
+      }
+      .border-bottom-lime {
+          border-bottom-color: var(--theme-yellow) !important;
+      }
+      /* Override footer */
+      .footer-custom {
+          background: linear-gradient(135deg, var(--theme-blue), var(--theme-blue-dark)) !important;
+      }
+      /* Override social icons */
+      .social-icon-custom {
+          background-color: var(--theme-blue) !important;
+      }
+      .social-icon-custom:hover {
+          background-color: #fff !important;
+          color: var(--theme-blue) !important;
+      }
+      /* Override JS-loaded practitioner rating */
+      .expert-card-custom .card-footer span {
+          color: var(--theme-blue) !important;
+      }
+    </style>
+    </head>
+<body>
+
+    <header class="py-3 shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white container">
+            <a class="navbar-brand logo" href="#">HealthApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto gap-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Practitioners</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Blog</a>
+                    </li>
+                </ul>
+                <a href="login.html" class="btn btn-primary-custom">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        
+        <section class="hero-section py-5 text-center">
+            <h1 class="display-4 fw-bold mb-3">On-demand health expertise at your fingertips</h1>
+            <p class="lead mb-5">Book online consultations, manage prescriptions, and track your health easily.</p>
+            
+            </section>
+
+        
+        <section class="container py-5 feature-cards-section">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div class="col">
+                    <div class="feature-card-custom card h-100 p-4 border-bottom-lavender">
+                        <i class="fas fa-stethoscope fa-3x mb-3 text-lavender"></i>
+                        <h3 class="h5 fw-bold mb-2">Expert consultations</h3>
+                        <p class="text-muted mb-0">Talk to qualified professionals for personalized guidance.</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="feature-card-custom card h-100 p-4 border-bottom-lime">
+                        <i class="fas fa-heart-pulse fa-3x mb-3 text-lime"></i>
+                        <h3 class="h5 fw-bold mb-2">Health advice & wellness</h3>
+                        <p class="text-muted mb-0">Get practical tips to maintain a balanced and healthy lifestyle.</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="feature-card-custom card h-100 p-4 border-bottom-lavender">
+                        <i class="fas fa-file-medical fa-3x mb-3 text-lavender"></i>
+                        <h3 class="h5 fw-bold mb-2">Reports & analytics</h3>
+                        <p class="text-muted mb-0">Access clear insights to understand trends and make informed decisions.</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="feature-card-custom card h-100 p-4 border-bottom-lime">
+                        <i class="fas fa-shield-alt fa-3x mb-3 text-lime"></i>
+                        <h3 class="h5 fw-bold mb-2">Preventive care programs</h3>
+                        <p class="text-muted mb-0">Stay ahead of health issues with proactive care and regular monitoring.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="container py-5 experts-section">
+            <h2 class="text-center fw-bold mb-2">Top Practitioners</h2>
+            <p class="text-center text-muted mb-5">Our most experienced professionals.</p>
+
+            <div id="practitioner-grid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                </div>
+
+        </section>
+
+        
+        <section class="container py-5 how-it-works-section bg-white rounded-3 shadow-sm">
+            <h2 class="text-center fw-bold mb-2">How it works</h2>
+            <p class="text-center text-muted mb-5">Just three simple steps to book an appointment.</p>
+            
+            <div class="row row-cols-1 row-cols-md-3 g-4 text-center">
+                <div class="col">
+                    <div class="step-card-custom p-4">
+                        <span class="d-block text-muted fw-semibold mb-2">01</span>
+                        <i class="fas fa-user-md fa-3x text-lavender mb-3"></i>
+                        <h3 class="h5 fw-bold mb-2">Find a Doctor</h3>
+                        <p class="text-muted mb-0">Search by specialty, location, or name to find the right practitioner for you.</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="step-card-custom p-4">
+                        <span class="d-block text-muted fw-semibold mb-2">02</span>
+                        <i class="fas fa-star-half-alt fa-3x text-lavender mb-3"></i>
+                        <h3 class="h5 fw-bold mb-2">Check Reviews</h3>
+                        <p class="text-muted mb-0">Read real patient testimonials to help you choose with confidence.</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="step-card-custom p-4">
+                        <span class="d-block text-muted fw-semibold mb-2">03</span>
+                        <i class="fas fa-calendar-check fa-3x text-lavender mb-3"></i>
+                        <h3 class="h5 fw-bold mb-2">Schedule a Meeting</h3>
+                        <p class="text-muted mb-0">Select a time that works for you and book your online consultation instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="container py-5 testimonials-section">
+            <h2 class="text-center fw-bold mb-2">Testimonials</h2>
+            <p class="text-center text-muted mb-5">Check what our customers say about us.</p>
+            
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col">
+                    <div class="testimonial-card-custom card h-100 p-4 shadow-sm rounded-3">
+                        <p class="testimonial-text mb-4">"Vestibulum lobortis, turpis vel sollicitudin facilisis, lacus dui laoreet nulla, id posuere. Curabitur purus ipsum, nec urna, phasellus."</p>
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/50?text=User1" class="rounded-circle me-3" alt="Michelle Foster">
+                            <div>
+                                <h5 class="fw-bold mb-0">Raj Sharma</h5>
+                                <span class="text-muted small">Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="testimonial-card-custom card h-100 p-4 shadow-sm rounded-3">
+                        <p class="testimonial-text mb-4">"Pellentesque consequat massa massa, a iaculis. Nunc mattis, erat id porta egestas, massa tempor mollis, mauris eget ex mattis, sodales elit vel finibus."</p>
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/50?text=User2" class="rounded-circle me-3" alt="Raymond Settle">
+                            <div>
+                                <h5 class="fw-bold mb-0">Amit Trivedi</h5>
+                                <span class="text-muted small">Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="testimonial-card-custom card h-100 p-4 shadow-sm rounded-3">
+                        <p class="testimonial-text mb-4">"Aliquam ex justo, aliquet vitae ultrices quis, ornare vel. Integer ut dapibus magna, commodo vel, eleifend leo quisque bibendum."</p>
+                        <div class="d-flex align-items-center">
+                            <img src="https://via.placeholder.com/50?text=User3" class="rounded-circle me-3" alt="Maggie Wallace">
+                            <div>
+                                <h5 class="fw-bold mb-0">Riya Chattergee</h5>
+                                <span class="text-muted small">Patient</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-custom py-5 mt-5">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-md-4 g-4 text-center text-md-start">
+                <div class="col">
+                    <a href="#" class="logo text-white mb-3 d-block">HealthApp</a>
+                    <p class="text-light-emphasis small">Your health, on-demand. Book consultations and manage your wellness anytime, anywhere.</p>
+                </div>
+                <div class="col">
+                    <h5 class="text-white fw-bold mb-3 footer-heading">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light-emphasis text-decoration-none d-block py-1">Home</a></li>
+                        <li><a href="#" class="text-light-emphasis text-decoration-none d-block py-1">Practitioners</a></li>
+                        <li><a href="#" class="text-light-emphasis text-decoration-none d-block py-1">Services</a></li>
+                        <li><a href="login.html" class="text-light-emphasis text-decoration-none d-block py-1">Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h5 class="text-white fw-bold mb-3 footer-heading">Contact Us</h5>
+                    <p class="text-light-emphasis small mb-1">support@healthapp.com</p>
+                    <p class="text-light-emphasis small">+1 (555) 123-4567</p>
+                </div>
+                <div class="col">
+                    <h5 class="text-white fw-bold mb-3 footer-heading">Follow Us</h5>
+                    <div class="d-flex justify-content-center justify-content-md-start gap-3">
+                        <a href="#" class="social-icon-custom"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon-custom"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon-custom"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon-custom"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center text-light-emphasis border-top border-secondary-subtle pt-4 mt-4">
+                <p class="mb-0 small">&copy; 2025 HealthApp. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    // Define your API base URL
+    const API_BASE = 'http://localhost:3000'; 
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadPractitioners();
+    });
+
+    async function loadPractitioners() {
+        const grid = document.getElementById("practitioner-grid");
+        if (!grid) return;
+
+        grid.innerHTML = '<p class="text-center text-muted">Loading practitioners...</p>';
+        
+        try {
+            const response = await fetch(`${API_BASE}/api/public/practitioners`);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json(); 
+
+            if (!result.success || !result.data || !result.data.length === 0) {
+                grid.innerHTML = '<p class="text-center text-muted">No practitioners available at this time.</p>';
+                return;
+            }
+
+            const practitioners = result.data;
+            const topPractitioners = practitioners.slice(0, 3);
+
+            const practitionersHTML = topPractitioners.map(p => {
+                const name = p.name || 'Dr. Name';
+                const specialty = p.specialization || 'Specialty';
+                const experience = p.experience || '0';
+                const price = p.fees || 0;
+                
+                let displayRating = 4.5; 
+                if (p.ratings && Array.isArray(p.ratings) && p.ratings.length > 0) {
+                    const sum = p.ratings.reduce((a, b) => a + b, 0);
+                    displayRating = sum / p.ratings.length;
+                }
+                
+                const imageUrl = p.profile?.photo || `https://via.placeholder.com/400x250?text=${name.replace(' ', '+')}`;
+                
+                // This ID is now available because of Step 1
+                const practitionerId = p._id; 
+                // ===============================================
+
+                return `
+                <div class="col">
+                    <div class="expert-card-custom card h-100 shadow-sm rounded-3 overflow-hidden position-relative">
+                        <img src="${imageUrl}" class="card-img-top" alt="${name}">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="card-title fw-bold mb-0">${name}</h5>
+                                <span class="badge bg-light text-dark fw-bold"><i class="fas fa-star text-warning me-1"></i> ${displayRating.toFixed(1)}</span>
+                            </div>
+                            <p class="card-text text-muted mb-0">${specialty}, ${experience}+ Years</p>
+                        </div>
+                        <div class="card-footer bg-white border-top border-light p-4">
+                            <span class="fw-bold text-lavender">₹${price} / hr</span>
+                        </div>
+                        
+                        <div class="hover-actions-custom d-flex flex-column justify-content-center align-items-center bg-white bg-opacity-90 position-absolute top-0 start-0 w-100 h-100">
+                            
+                            
+                            <a href="booking.html?practitionerId=${practitionerId}" class="btn btn-primary-custom">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            grid.innerHTML = practitionersHTML;
+
+        } catch (error) {
+            console.error("Error loading practitioners:", error);
+            grid.innerHTML = `<p class="text-center text-danger">${error.message || 'Could not load practitioners.'}</p>`;
+        }
+    }
+</script>
+</body>
+</html>

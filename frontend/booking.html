@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Appointment - Health & Wellness</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      /* === THEME CHANGE === */
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      color: #333;
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      /* === THEME CHANGE === */
+      background: linear-gradient(180deg, #0d6efd, #0a58ca);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 20px 15px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .sidebar h4 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #eae4ff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+    .sidebar a.active,
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+    .sidebar a i {
+      font-size: 1.3rem;
+    }
+    .logout-btn {
+      color: #ffdede !important;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 260px;
+      padding: 60px 30px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    /* Booking Card */
+    .booking-card {
+      background: white;
+      border-radius: 25px;
+      padding: 50px;
+      max-width: 950px;
+      width: 100%;
+      min-height: 650px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .booking-card h2 {
+      text-align: center;
+      font-weight: 700;
+      /* === THEME CHANGE === */
+      color: #0d6efd;
+      margin-bottom: 25px;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      transition: 0.3s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      /* === THEME CHANGE === */
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    }
+
+    .btn-success {
+      background: #20c997;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: 0.3s;
+      width: 100%;
+    }
+
+    .btn-success:hover {
+      background: #198754;
+      transform: scale(1.05);
+    }
+
+    .appointment-summary {
+      display: none;
+      /* === THEME CHANGE === */
+      border-left: 5px solid #0d6efd;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    footer {
+      color: white;
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      position: absolute;
+      bottom: 10px;
+      left: 260px;
+      right: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div>
+      <h4>Wellness</h4>
+      <nav class="nav flex-column">
+        <a href="home.html"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
+        <a href="experts.html"><i class="bi bi-person-lines-fill"></i><span>Find Experts</span></a>
+        <a href="booking.html" class="active"><i class="bi bi-calendar2-check-fill"></i><span>Book Appointment</span></a>
+        <a href="payments.html"><i class="bi bi-wallet2"></i><span>Payments</span></a>
+        <a href="profile.html"><i class="bi bi-person-circle"></i><span>Profile</span></a>
+      </nav>
+    </div>
+    <a href="#" class="logout-btn" id="logoutBtn"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+  </aside>
+
+  <main class="main-content">
+    <div class="booking-card">
+      <h2><i class="bi bi-calendar-check"></i> Book an Appointment</h2>
+
+      <form id="bookingForm">
+        <div class="mb-3">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-control" id="name" required >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Choose Expert</label>
+          <select id="expert" class="form-select" required>
+            <option value="">Loading experts...</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Time</label>
+            <input type="time" class="form-control" id="time" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Type</label>
+          <select class="form-select" id="type">
+            <option value="Online">Online</option>
+            <option value="In-person">In-person</option>
+          </select>
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-calendar2-plus"></i> Confirm Booking
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer>&copy; 2025 Health & Wellness Platform. All Rights Reserved.</footer>
+
+  <script>
+    const token = localStorage.getItem("token");
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", e => {
+      e.preventDefault();
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      if (!token) {
+        alert("Please login first!");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Fetch current user info
+      const userRes = await fetch("http://localhost:3000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userData = await userRes.json();
+      if (userData.success && userData.user) {
+        document.getElementById("name").value = userData.user.name;
+      }
+
+      // Load available experts
+      const expertSelect = document.getElementById("expert");
+      try {
+        const res = await fetch("http://localhost:3000/api/users?role=practitioner", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+
+        // 🧩 Auto-select if user clicked "Book" on experts page
+        const selectedExpertId = localStorage.getItem("selectedExpertId");
+        const selectedExpertName = localStorage.getItem("selectedExpertName");
+
+        if (data.success && data.users.length > 0) {
+          let optionsHTML = '<option value="">Select Expert</option>';
+          data.users.forEach(d => {
+            const selected = (d._id === selectedExpertId) ? "selected" : "";
+            optionsHTML += `<option value="${d._id}" ${selected}>${d.name} - ${d.specialization || "Practitioner"}</option>`;
+          });
+          expertSelect.innerHTML = optionsHTML;
+
+          // Disable dropdown if expert was preselected
+          if (selectedExpertId) {
+            expertSelect.disabled = true;
+          }
+        } else {
+          expertSelect.innerHTML = '<option value="">No experts found</option>';
+        }
+      } catch (err) {
+        console.error(err);
+        expertSelect.innerHTML = '<option>Error loading experts</option>';
+      }
+
+      // Handle booking submission
+      document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const practitionerId = document.getElementById("expert").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+        const type = document.getElementById("type").value;
+        
+        // Get the expert's name from the dropdown for the confirmation page
+        const expertSelect = document.getElementById("expert");
+        const expertName = expertSelect.options[expertSelect.selectedIndex].text;
+
+        if (!practitionerId || !date || !time) {
+          alert("Please fill all required fields.");
+          return;
+        }
+
+        try {
+          const res = await fetch("http://localhost:3000/api/appointments", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ practitionerId, date, time, type }),
+          });
+
+          const data = await res.json();
+
+          // ==================== THIS IS THE CHANGE ====================
+          if (data.success) {
+            // Clear stored expert info
+            localStorage.removeItem("selectedExpertId");
+            localStorage.removeItem("selectedExpertName");
+
+            // Redirect to confirmation.html with URL parameters
+            window.location.href = `confirmation.html?expert=${encodeURIComponent(expertName)}&date=${date}&time=${time}&type=${type}`;
+          
+          } else {
+            alert(data.message || "Failed to book appointment.");
+          }
+          // ================== END OF CHANGE ==================
+
+        } catch (err) {
+          console.error(err);
+          alert("Error connecting to server.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

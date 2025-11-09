@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payments - Health & Wellness</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f5fb;
+      color: #333;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      /* === THEME CHANGE === */
+      background: linear-gradient(180deg, #0d6efd, #0a58ca);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 20px 15px;
+    }
+    .sidebar h4 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #eae4ff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+    .sidebar a.active,
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    .sidebar a i {
+      font-size: 1.3rem;
+    }
+    .logout-btn {
+      color: #ffdede !important;
+    }
+
+    /* Main */
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .main-content h2 {
+      font-weight: 700;
+      /* === THEME CHANGE === */
+      color: #0d6efd;
+      margin-bottom: 1.5rem;
+    }
+
+    .payment-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+      padding: 15px 20px;
+      background: #fff;
+      transition: transform 0.2s;
+    }
+    .payment-card:hover { transform: translateY(-3px); }
+    .payment-status {
+      font-weight: bold;
+    }
+    .pending { color: #d63384; }
+    .paid { color: #198754; }
+
+    footer {
+      text-align: center;
+      color: #aaa;
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+    .main-content::-webkit-scrollbar { width: 8px; }
+    .main-content::-webkit-scrollbar-thumb {
+      /* === THEME CHANGE === */
+      background: #a0c7e4;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; padding: 20px 8px; align-items: center; }
+      .sidebar h4, .sidebar a span { display: none; }
+      .main-content { margin-left: 70px; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div>
+      <h4>Wellness</h4>
+      <nav class="nav flex-column">
+        <a href="home.html"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
+        <a href="experts.html"><i class="bi bi-person-lines-fill"></i><span>Find Experts</span></a>
+        <a href="favorites.html"><i class="bi bi-heart-fill"></i><span>Favorites</span></a>
+        <a href="health_box.html"><i class="bi bi-clipboard2-heart-fill"></i><span>Health Box</span></a>
+        <a href="payments.html" class="active"><i class="bi bi-wallet2"></i><span>Payments</span></a>
+        <a href="profile.html"><i class="bi bi-person-circle"></i><span>Profile</span></a>
+      </nav>
+    </div>
+    <a href="#" class="logout-btn" id="logoutBtn"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+  </aside>
+
+  <main class="main-content">
+    <h2>Your Payments</h2>
+
+    <section class="mb-5">
+      <h4 class="text-danger">Pending Payments</h4>
+      <div id="pendingPayments"></div>
+    </section>
+
+    <section>
+      <h4 class="text-success">Paid Payments</h4>
+      <div id="paidPayments"></div>
+    </section>
+
+    <footer>&copy; 2025 Health & Wellness Platform. All Rights Reserved.</footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Logout Functionality
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    async function loadPayments() {
+      const pendingContainer = document.getElementById("pendingPayments");
+      const paidContainer = document.getElementById("paidPayments");
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("user_id");
+
+      pendingContainer.innerHTML = "<p>Loading...</p>";
+      paidContainer.innerHTML = "";
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/payments/user/${userId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (!data.success || !data.payments) {
+          pendingContainer.innerHTML = "<div class='alert alert-warning text-center'>No payment data found.</div>";
+          return;
+        }
+
+        pendingContainer.innerHTML = "";
+        paidContainer.innerHTML = "";
+
+        data.payments.forEach(payment => {
+          const card = document.createElement("div");
+          card.className = "payment-card d-flex justify-content-between align-items-center";
+          card.innerHTML = `
+            <div>
+              <h5>${payment.description || 'Consultation Payment'}</h5>
+              <p>Amount: ₹${payment.amount || '—'}</p>
+            </div>
+            <div class="text-end">
+              <span class="payment-status ${payment.status === 'pending' ? 'pending' : 'paid'}">
+                ${payment.status.toUpperCase()}
+              </span>
+              ${payment.status === 'pending' ? `
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-primary me-1" onclick="pay('${payment._id}','UPI')">UPI</button>
+                  <button class="btn btn-sm btn-success me-1" onclick="pay('${payment._id}','Card')">Card</button>
+                  <button class="btn btn-sm btn-warning" onclick="pay('${payment._id}','NetBanking')">NetBanking</button>
+                </div>`
+              : `
+                <div class="mt-2">
+                  <button class="btn btn-outline-secondary btn-sm" onclick="downloadReceipt('${payment._id}')">
+                    <i class="bi bi-file-earmark-arrow-down"></i> Receipt
+                  </button>
+                </div>`}
+            </div>
+          `;
+          if (payment.status === "pending") pendingContainer.appendChild(card);
+          else paidContainer.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        pendingContainer.innerHTML = "<div class='alert alert-danger text-center'>Server error loading payments.</div>";
+      }
+    }
+
+    // Simulated payment confirmation → updates backend
+    async function pay(paymentId, method) {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`http://localhost:3000/api/payments/${paymentId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: "paid", method })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`Payment via ${method} successful!`);
+          loadPayments();
+        } else {
+          alert("Payment update failed.");
+        }
+      } catch (err) {
+        alert("Server error while updating payment.");
+      }
+    }
+
+    // Download Receipt
+    async function downloadReceipt(paymentId) {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`http://localhost:3000/api/receipt/${paymentId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error("Failed to download receipt");
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `receipt_${paymentId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error(err);
+        alert("Error downloading receipt. Please try again.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPayments);
+  </script>
+</body>
+</html>

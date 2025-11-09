@@ -1,0 +1,50 @@
+const express = require('express');
+const router = express.Router();
+// Assuming you have these models and middleware imported
+const Message = require('../models/Message'); 
+const authMiddleware = require('../middleware/authMiddleware'); 
+
+// GET /api/messages/user/:userId
+// Fetches all messages for a specific user.
+router.get('/user/:userId', authMiddleware, async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Find messages where the recipient is the user ID provided.
+        // CRITICAL: .populate('senderId', 'name') embeds the sender's name 
+        // into the response, preventing the frontend from showing 'N/A'.
+        const messages = await Message.find({ userId: userId })
+            .populate('senderId', 'name') 
+            .sort({ dateSent: -1 })
+            .exec();
+
+        if (!messages) {
+            return res.status(404).json({ success: false, message: 'No messages found for this user.' });
+        }
+
+        res.status(200).json(messages);
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        res.status(500).json({ success: false, message: 'Server error fetching messages.' });
+    }
+});
+
+// PUT /api/messages/:id/read
+// Route to mark a specific message as read (Optional but good practice)
+router.put('/:id/read', authMiddleware, async (req, res) => {
+    try {
+        const message = await Message.findByIdAndUpdate(
+            req.params.id,
+            { isRead: true },
+            { new: true }
+        );
+        if (!message) {
+            return res.status(404).json({ success: false, message: 'Message not found.' });
+        }
+        res.status(200).json({ success: true, message: 'Message marked as read.', data: message });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error updating message status.' });
+    }
+});
+
+module.exports = router;

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home - Health & Wellness</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f5fb;
+      color: #333;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 240px;
+      /* === THEME CHANGE === */
+      background: linear-gradient(180deg, #0d6efd, #0a58ca);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 20px 15px;
+    }
+    .sidebar h4 { text-align: center; font-weight: 700; margin-bottom: 30px; }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #eae4ff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+    .sidebar a.active,
+    .sidebar a:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    .sidebar a i { font-size: 1.3rem; }
+    .logout-btn { color: #ffdede !important; }
+
+    .main-content { margin-left: 240px; padding: 30px; overflow-y: auto; flex: 1; }
+    .welcome { font-size: 1.6rem; font-weight: 600; margin-bottom: 1.5rem; }
+
+    .info-card {
+      border-radius: 12px; background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 1.5rem; margin-bottom: 1.5rem;
+      transition: transform .2s ease;
+    }
+    .info-card:hover { transform: translateY(-3px); }
+    .book-card {
+      /* === THEME CHANGE === */
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      color: #fff; display: flex;
+      justify-content: space-between;
+      align-items: center; flex-wrap: wrap;
+    }
+    .book-card h4 { font-weight: 700; }
+    .book-card button {
+      background-color: #fff; 
+      /* === THEME CHANGE === */
+      color: #0d6efd;
+      font-weight: 600; border: none;
+      padding: 8px 18px; border-radius: 25px;
+    }
+
+    .doctor-info .icon-card {
+      border-radius: 12px; background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      text-align: center; padding: 1rem; transition: 0.3s;
+      cursor: pointer; /* Added cursor pointer */
+    }
+    .doctor-info .icon-card:hover { 
+      /* === THEME CHANGE === */
+      background: #e7f0ff; 
+      transform: scale(1.03); 
+    }
+    .doctor-info i { 
+      font-size: 1.8rem; 
+      /* === THEME CHANGE === */
+      color: #0d6efd; 
+    }
+
+    footer { text-align: center; color: #aaa; padding: 10px; font-size: 0.9rem; }
+    .main-content::-webkit-scrollbar { width: 8px; }
+    .main-content::-webkit-scrollbar-thumb { 
+      /* === THEME CHANGE === */
+      background: #a0c7e4; 
+      border-radius: 10px; 
+    }
+
+    .appt-card {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; padding: 20px 8px; align-items: center; }
+      .sidebar h4, .sidebar a span { display: none; }
+      .main-content { margin-left: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div>
+      <h4>Wellness</h4>
+      <nav class="nav flex-column">
+        <a href="home.html" class="active"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
+        <a href="experts.html"><i class="bi bi-person-lines-fill"></i><span>Find Experts</span></a>
+        <a href="favorites.html"><i class="bi bi-heart-fill"></i><span>Favorites</span></a>
+        <a href="health_box.html"><i class="bi bi-clipboard2-heart-fill"></i><span>Health Box</span></a>
+        <a href="payments.html"><i class="bi bi-wallet2"></i><span>Payments</span></a>
+        <a href="profile.html"><i class="bi bi-person-circle"></i><span>Profile</span></a>
+      </nav>
+    </div>
+    <a href="#" class="logout-btn" id="logoutBtn"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+  </aside>
+
+  <main class="main-content">
+    <h3 class="welcome" id="welcomeUser">Welcome</h3>
+
+    <div class="info-card book-card">
+      <div>
+        <h4>Book Appointment</h4>
+        <p>Search, Book & Join The Queue!</p>
+        <button onclick="window.location.href='booking.html'">Book Now</button>
+      </div>
+      <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" width="100" alt="Doctor">
+    </div>
+
+    <h5 class="mb-3">From your doctor for you</h5>
+    <div class="row doctor-info mb-4">
+      <div class="col-6 col-md-3 mb-3" onclick="window.location.href='messages.html'">
+        <div class="icon-card d-flex flex-column align-items-center position-relative">
+          <i class="bi bi-envelope-fill"></i>
+          <p class="mt-2 mb-0 fw-semibold">Important Messages</p>
+          <span id="unreadBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+            0
+            <span class="visually-hidden">unread messages</span>
+          </span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 mb-3" onclick="window.location.href='prescriptions.html'">
+        <div class="icon-card">
+          <i class="bi bi-file-earmark-medical-fill"></i>
+          <p class="mt-2 mb-0 fw-semibold">Prescription</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        <h5>Add Family Member</h5>
+        <p class="text-muted mb-2">Save time while booking. Add your family members now.</p>
+        <button class="btn btn-outline-primary rounded-pill" style="border-color:#0d6efd;color:#0d6efd"
+          data-bs-toggle="modal" data-bs-target="#addFamilyModal">Add now +</button>
+      </div>
+      <img src="https://cdn-icons-png.flaticon.com/512/4140/4140051.png" width="90" alt="Family">
+    </div>
+
+    <div class="info-card mt-4">
+      <h5 class="text-secondary"><i class="bi bi-people-fill"></i> Your Family Members</h5>
+      <div id="familySection"></div>
+    </div>
+
+    <div id="appointments-section" class="mt-5">
+      <h4 class="mb-3 text-secondary">Your Appointments</h4>
+      <div id="upcomingAppts"></div>
+      <div id="previousAppts" class="mt-4"></div>
+    </div>
+
+    <footer>&copy; 2025 Health & Wellness Platform. All Rights Reserved.</footer>
+  </main>
+
+  <div class="modal fade" id="addFamilyModal" tabindex="-1" aria-labelledby="addFamilyLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addFamilyLabel">Add Family Member</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="familyForm">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" id="familyName" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Relation</label>
+              <input type="text" class="form-control" id="familyRelation" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-control" id="familyAge" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Add Member</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// NOTE: Replace 'http://localhost:3000' with your actual backend URL
+const API_BASE = 'http://localhost:3000'; 
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("user_id");
+  const msgBox = document.getElementById("welcomeUser");
+
+  if (!token || role !== "user" || !userId) {
+    console.error("Authentication required. Redirecting.");
+    // Changed alert() to a simple redirect with a delay
+    setTimeout(() => { window.location.href = "login.html"; }, 100); 
+    return;
+  }
+
+  msgBox.textContent = "Loading your dashboard...";
+
+  try {
+    // ✅ Fetch user details
+    const resUser = await fetch(`${API_BASE}/api/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const dataUser = await resUser.json();
+
+    if (dataUser.success && dataUser.user) {
+      msgBox.textContent = `Welcome ${dataUser.user.name}! 👋`;
+    } else {
+      msgBox.textContent = "Welcome User 👋";
+    }
+
+    // ✅ Load all necessary dynamic content
+    await loadFamilyMembers(userId, token);
+    await loadAppointments(userId, token);
+    await fetchUnreadMessages(userId, token); // 💡 NEW: Fetch unread messages
+
+  } catch (err) {
+    console.error("Dashboard load error:", err);
+    msgBox.textContent = "Welcome back!";
+  }
+});
+
+// 💡 NEW FUNCTION: Fetch unread message count
+async function fetchUnreadMessages(userId, token) {
+  const unreadBadge = document.getElementById("unreadBadge");
+  unreadBadge.style.display = 'none'; // Hide by default
+
+  try {
+    // Note: This assumes you have a backend route like /api/messages/user/:userId/unread-count
+    // If not, it will fetch all messages and filter them here (less efficient, but functional)
+    const res = await fetch(`${API_BASE}/api/messages/user/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    
+    if (!res.ok) {
+        throw new Error("Failed to fetch messages status");
+    }
+
+    const messages = await res.json();
+    if (Array.isArray(messages)) {
+        // Filter messages where isRead is false
+        const unreadCount = messages.filter(m => !m.isRead).length;
+
+        if (unreadCount > 0) {
+            unreadBadge.textContent = unreadCount;
+            unreadBadge.style.display = 'block'; 
+        }
+    }
+  } catch (err) {
+    console.error("Error fetching unread message count:", err);
+    // Optionally display an error state, but keeping it hidden for cleanliness.
+  }
+}
+
+
+// ✅ Load Family Members
+async function loadFamilyMembers(userId, token) {
+  const familySection = document.getElementById("familySection");
+  try {
+    const res = await fetch(`${API_BASE}/api/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+
+    if (data.user && data.user.familyMembers && data.user.familyMembers.length > 0) {
+      const membersHTML = data.user.familyMembers.map(m => `
+        <div class="appt-card">
+          👨‍👩‍👧‍👦 <strong>${m.name}</strong> (${m.relation}, Age ${m.age})
+        </div>
+      `).join('');
+      familySection.innerHTML = membersHTML;
+    } else {
+      familySection.innerHTML = `<p class='text-muted'>No family members added yet.</p>`;
+    }
+  } catch(err) {
+    console.error("Error loading family members:", err);
+    familySection.innerHTML = `<p class='text-danger'>Could not load family data.</p>`;
+  }
+}
+
+// ✅ Load Appointments
+async function loadAppointments(userId, token) {
+  const upcomingAppts = document.getElementById("upcomingAppts");
+  const previousAppts = document.getElementById("previousAppts");
+  
+  try {
+    const apptRes = await fetch(`${API_BASE}/api/appointments/user/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const appts = await apptRes.json();
+
+    if (Array.isArray(appts) && appts.length > 0) {
+      const upcoming = appts.filter(a => ["pending", "confirmed"].includes(a.status));
+      const previous = appts.filter(a => ["completed", "missed", "cancelled"].includes(a.status));
+
+      const formatAppt = (a) => `
+        <div class="appt-card">
+          <strong>${a.date}</strong> at ${a.time}<br>
+          <span>With: <strong>${a.practitionerId?.name || 'Doctor'}</strong></span><br>
+          <small class="text-muted">Status: ${a.status}</small>
+        </div>`;
+
+      upcomingAppts.innerHTML = upcoming.length
+        ? `<div class='info-card'>
+            <h5 class='text-success'><i class="bi bi-calendar-event"></i> Upcoming Appointments</h5>
+            ${upcoming.map(formatAppt).join('')}
+          </div>`
+        : `<p class='text-muted'>No upcoming appointments.</p>`;
+
+      previousAppts.innerHTML = previous.length
+        ? `<div class='info-card'>
+            <h5 class='text-primary'><i class="bi bi-clock-history"></i> Previous Appointments</h5>
+            ${previous.map(formatAppt).join('')}
+          </div>`
+        : `<p class='text-muted'>No previous appointments.</p>`;
+    } else {
+      upcomingAppts.innerHTML = `<p class='text-muted'>No upcoming appointments found.</p>`;
+      previousAppts.innerHTML = ``;
+    }
+  } catch (err) {
+    console.error("Error loading appointments:", err);
+    upcomingAppts.innerHTML = `<p class='text-danger'>Could not load appointment data.</p>`;
+    previousAppts.innerHTML = ``;
+  }
+}
+
+// ✅ Handle Add Family Member Form
+document.getElementById("familyForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("familyName").value;
+  const relation = document.getElementById("familyRelation").value;
+  const age = document.getElementById("familyAge").value;
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("user_id");
+
+  const res = await fetch(`${API_BASE}/api/users/${userId}/family`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, relation, age }),
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    // Replace alert with UI message or console log
+    console.log("Family member added successfully!");
+    document.getElementById("familyForm").reset();
+    bootstrap.Modal.getInstance(document.getElementById('addFamilyModal')).hide();
+    loadFamilyMembers(userId, token);
+  } else {
+    console.error("Error adding family member:", data.message);
+    document.getElementById("familyForm").insertAdjacentHTML('beforebegin', '<div class="alert alert-danger" role="alert">Error adding family member.</div>');
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", (e) => {
+  e.preventDefault();
+  localStorage.clear();
+  window.location.href = "login.html";
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

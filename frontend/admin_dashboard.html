@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Health & Wellness</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* ---------- Base ---------- */
+    :root{
+      /* === THEME CHANGE === */
+      --theme-1: #0d6efd; /* Main Blue */
+      --theme-2: #0a58ca; /* Dark Blue */
+      --accent: #ffc107; /* Yellow Accent */
+      /* === END THEME CHANGE === */
+      
+      --teal: #20c997;
+      --muted: #6c757d;
+      --glass: rgba(255,255,255,0.06);
+      --card-bg: rgba(255,255,255,0.85);
+      --card-bg-dark: rgba(255,255,255,0.06);
+    }
+    body {
+      background-color: #f8f9fa;
+      font-family: "Poppins", sans-serif;
+      transition: background-color .25s ease, color .25s ease;
+    }
+
+    /* ---------- Dark Mode ---------- */
+    body.dark {
+      background-color: #0f1724;
+      color: #e6eef8;
+    }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      /* === THEME CHANGE === */
+      background: linear-gradient(180deg, var(--theme-1) 0%, var(--theme-2) 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+      position: sticky;
+      top: 0;
+    }
+    .sidebar .brand {
+      display:flex; gap:10px; align-items:center;
+    }
+    .sidebar a {
+      color: #fff;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 10px;
+      text-decoration: none;
+      margin-bottom: 6px;
+      transition: background-color 200ms, transform 150ms;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background-color: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    /* ---------- Topbar ---------- */
+    .topbar {
+      display:flex; align-items:center; justify-content:space-between; gap:1rem;
+      margin-bottom:12px;
+    }
+    .topbar .controls {display:flex; align-items:center; gap:12px;}
+
+    /* ---------- Cards & Glass ---------- */
+    .section-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 6px 20px rgba(12,15,25,0.06);
+      transition: transform .25s ease, box-shadow .25s ease;
+      overflow: hidden;
+      backdrop-filter: blur(6px);
+    }
+    body.dark .section-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      box-shadow: none;
+    }
+    .section-card:hover { transform: translateY(-6px); }
+
+    .analytics-card {
+      border-radius: 12px; padding:16px; text-align:center;
+      transition: transform .2s ease, box-shadow .2s ease;
+      height:100%;
+      display:flex; flex-direction:column; justify-content:center; gap:8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.92));
+    }
+    body.dark .analytics-card{ background: var(--card-bg-dark); }
+
+    .analytics-card i {
+      font-size: 26px;
+      /* === THEME CHANGE === */
+      color: var(--theme-1);
+    }
+
+    .stat-number { font-size: 1.6rem; font-weight:700; /* === THEME CHANGE === */ color:var(--theme-1); }
+    .stat-sub { font-size:0.9rem; color:var(--muted); }
+
+    /* growth badge */
+    .growth { font-weight:600; font-size:0.85rem; color:var(--teal); }
+
+    /* ---------- small UI bits ---------- */
+    .badge-status { padding:6px 10px; border-radius:12px; font-weight:600; font-size:0.85rem; display:inline-block;}
+    .badge-paid{ background:#e6fff4; color:#057a51; }
+    .badge-pending{ background:#fff7e6; color:#8a5b00; }
+    .badge-missed{ background:#ffe6ea; color:#7a1b1b; }
+    .badge-completed{ background:#e8f8ff; color:#036b79; }
+
+    /* table avatars */
+    .avatar {
+      width:32px;height:32px;border-radius:8px;background:#eee;display:inline-flex; align-items:center; justify-content:center; margin-right:8px;
+    }
+    body.dark .avatar { background:#111827; color:#cbd5e1; }
+
+    /* search / filters */
+    .filters .form-control { min-width: 160px; }
+
+    /* small widgets grid */
+    .widgets-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
+    @media (max-width: 992px){ .widgets-grid{ grid-template-columns: repeat(1,1fr);} }
+
+    /* modal override for nicer look */
+    .modal-content { border-radius: 10px; }
+
+    /* pagination */
+    .pagination { gap:8px; }
+
+    /* subtle fade-in for sections */
+    .dashboard-section { display:none; opacity:0; transform: translateY(8px); transition: opacity .35s ease, transform .35s ease; }
+    .dashboard-section.show { display:block; opacity:1; transform: translateY(0); }
+
+    /* CSV export button */
+    /* === THEME CHANGE === */
+    .btn-export { background: linear-gradient(90deg,var(--theme-1),var(--theme-2)); color:white; }
+
+    /* utility */
+    .muted-small { color: #6c757d; font-size:0.85rem; }
+
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row g-0">
+      <div class="col-md-2 sidebar">
+        <div class="brand mb-4">
+          <i class="bi bi-speedometer2" style="font-size:22px"></i>
+          <div>
+            <div style="font-weight:700">Admin</div>
+            <div class="muted-small">Health & Wellness</div>
+          </div>
+        </div>
+
+        <a href="#" class="nav-link active" data-target="analytics"><i class="bi bi-graph-up"></i> Analytics</a>
+        <a href="#" class="nav-link" data-target="users"><i class="bi bi-people"></i> Users</a>
+        <a href="#" class="nav-link" data-target="practitioners"><i class="bi bi-person-badge"></i> Practitioners</a>
+        <a href="#" class="nav-link" data-target="appointments"><i class="bi bi-calendar-check"></i> Appointments</a>
+        <a href="#" class="nav-link" data-target="payments"><i class="bi bi-currency-dollar"></i> Payments</a>
+
+        <div style="height:28px"></div>
+        <a href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      </div>
+
+      <div class="col-md-10 p-4">
+
+        <div class="topbar mb-3">
+          <div>
+            <h4 style="margin:0">Dashboard</h4>
+            <div class="muted-small">Welcome back, Admin</div>
+          </div>
+
+          <div class="controls">
+            <div class="filters d-flex align-items-center gap-2">
+              <input id="filterFrom" type="date" class="form-control form-control-sm" title="From">
+              <input id="filterTo" type="date" class="form-control form-control-sm" title="To">
+              <select id="filterPractitioner" class="form-select form-select-sm">
+                <option value="">All Practitioners</option>
+              </select>
+              <button id="applyFilters" class="btn btn-sm btn-outline-secondary">Apply</button>
+            </div>
+
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary" id="notifBtn" data-bs-toggle="dropdown">
+                <i class="bi bi-bell"></i>
+                <span id="notifCount" class="badge bg-danger ms-1" style="display:none">0</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width:280px;">
+                <li><strong>Recent Activity</strong></li>
+                <li><hr class="dropdown-divider"></li>
+                <div id="recentActivity" style="max-height:220px; overflow:auto; padding-right:6px"></div>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-center" href="#">View all activities</a></li>
+              </ul>
+            </div>
+
+            <button id="toggleTheme" class="btn btn-sm btn-outline-secondary"><i class="bi bi-moon"></i></button>
+          </div>
+        </div>
+
+        <div id="analytics" class="dashboard-section show">
+          <div class="row g-3 mb-3">
+            <div class="col-md-3">
+              <div class="analytics-card section-card">
+                <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+                  <i class="bi bi-people" style="font-size:26px"></i>
+                  <div style="text-align:left">
+                    <div class="stat-number" id="stat-users">0</div>
+                    <div class="stat-sub">Total Users <span class="growth" id="growth-users"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="analytics-card section-card">
+                <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+                  <i class="bi bi-person-badge" style="font-size:26px"></i>
+                  <div style="text-align:left">
+                    <div class="stat-number" id="stat-practitioners">0</div>
+                    <div class="stat-sub">Practitioners <span class="growth" id="growth-pract"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="analytics-card section-card">
+                <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+                  <i class="bi bi-calendar-check" style="font-size:26px"></i>
+                  <div style="text-align:left">
+                    <div class="stat-number" id="stat-appointments">0</div>
+                    <div class="stat-sub">Appointments <span class="growth" id="growth-apps"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="analytics-card section-card">
+                <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+                  <i class="bi bi-currency-dollar" style="font-size:26px"></i>
+                  <div style="text-align:left">
+                    <div class="stat-number" id="stat-revenue">₹0</div>
+                    <div class="stat-sub">Revenue <span id="growth-rev" class="growth"></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-lg-7">
+              <div class="section-card">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 style="margin:0">Appointments Trend</h5>
+                  <small class="muted-small">Weekly / Monthly</small>
+                </div>
+                <div style="height:300px;">
+                  <canvas id="appointmentsTimeChart"></canvas>
+                </div>
+              </div>
+
+              <div class="mt-3 section-card">
+                <h6 style="margin-bottom:12px">Top Practitioners</h6>
+                <div id="topPractitioners" style="display:flex; flex-direction:column; gap:10px;"></div>
+              </div>
+
+            </div>
+
+            <div class="col-lg-5">
+              <div class="section-card mb-3">
+                <h6>Revenue Breakdown</h6>
+                <div style="height:220px;">
+                  <canvas id="revenueBreakdown"></canvas>
+                </div>
+                <div class="mt-2">
+                  <div class="d-flex justify-content-between">
+                    <small>Revenue Target Progress</small>
+                    <small id="revPercent">0%</small>
+                  </div>
+                  <div class="progress" style="height:10px;">
+                    <div id="revProgress" class="progress-bar" role="progressbar" style="width:0%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-card">
+                <h6>Practitioner Performance</h6>
+                <div style="height:160px;"><canvas id="practitionerBar"></canvas></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-lg-4">
+              <div class="section-card">
+                <h6>Appointments Status</h6>
+                <div style="height:180px;">
+                  <canvas id="statusDoughnut"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="section-card">
+                <h6>Upcoming Appointments Today</h6>
+                <div id="upcomingList" style="max-height:200px; overflow:auto;"></div>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="section-card">
+                <h6>Most Active User</h6>
+                <div id="mostActiveUser" style="padding-top:6px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="users" class="dashboard-section">
+          <div class="section-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 style="margin:0">Manage Users</h4>
+              <div class="d-flex gap-2">
+                <input id="userSearch" class="form-control form-control-sm" style="min-width:220px" placeholder="Search name / email / role">
+                <button id="resetUsers" class="btn btn-sm btn-outline-secondary">Reset</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+                <tbody id="userTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div id="userCount" class="muted-small"></div>
+              <nav>
+                <ul id="userPagination" class="pagination"></ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+
+        <div id="practitioners" class="dashboard-section">
+          <div class="section-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 style="margin:0">Practitioners</h4>
+              <div class="d-flex gap-2">
+                <input id="pracSearch" class="form-control form-control-sm" style="min-width:220px" placeholder="Search practitioners">
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead><tr><th>#</th><th>Profile</th><th>Name</th><th>Email</th><th>Specialization</th><th>Rating</th><th>Availability</th><th>Actions</th></tr></thead>
+                <tbody id="practitionerTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="mt-3">
+              <h6>Appointments per Practitioner</h6>
+              <div style="height:180px;"><canvas id="pracAppointmentsChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="appointments" class="dashboard-section">
+          <div class="section-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 style="margin:0">Appointments</h4>
+              <div class="d-flex gap-2">
+                <select id="apptFilterStatus" class="form-select form-select-sm">
+                  <option value="">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="missed">Missed</option>
+                </select>
+                <button id="refreshAppointments" class="btn btn-sm btn-outline-secondary">Refresh</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead><tr><th>#</th><th>User</th><th>Practitioner</th><th>Date</th><th>Time</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="appointmentTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="payments" class="dashboard-section">
+          <div class="section-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 style="margin:0">Payments</h4>
+              <div class="d-flex gap-2">
+                <select id="paymentsStatusFilter" class="form-select form-select-sm">
+                  <option value="">All</option>
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                </select>
+                <button id="exportPayments" class="btn btn-sm btn-export">Export CSV</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead><tr><th>#</th><th>User</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+                <tbody id="paymentTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="editUserModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit User Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div id="editUserName" class="mb-2"></div>
+                <select id="editUserRole" class="form-select mb-2">
+                  <option value="user">User</option>
+                  <option value="practitioner">Practitioner</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <div class="form-text">Changes will be pushed to server if endpoint supports role update.</div>
+              </div>
+              <div class="modal-footer">
+                <button id="saveUserBtn" class="btn btn-primary">Save</button>
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /*****************************************************************
+     * Changes summary:
+     * - users list fetched from /api/users?role=user (so admin/practitioner not shown)
+     * - practitioners fetched from /api/users?role=practitioner (specialization included)
+     * - delete uses DELETE /api/users/:id (endpoint to be present in backend)
+     * - edit uses PUT /api/users/:id
+     *****************************************************************/
+
+    const API_ADMIN = "http://localhost:3000/api/admin"; // dashboard & payments endpoints remain
+    const API_USERS = "http://localhost:3000/api/users";   // public users endpoints
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (!token || role !== "admin") {
+      alert("Unauthorized access. Please login as admin.");
+      window.location.href = "login.html";
+    }
+
+    // Basic nav handling
+    document.querySelectorAll('.sidebar .nav-link').forEach(el => {
+    el.addEventListener('click', (e) => {
+  e.preventDefault();
+  document.querySelectorAll('.sidebar .nav-link').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  const target = el.dataset.target;
+  document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('show'));
+  const section = document.getElementById(target);
+  section.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // ✅ Re-render charts when switching section
+  if (target === 'practitionerSection' || target === 'statsSection') {
+    renderChartsFromStats(GLOBAL);
+  }
+});
+
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+
+    // ========= Global state =========
+    let GLOBAL = {
+      stats: null,
+      recent: null,
+      users: [],          // normal users
+      practitioners: [],   // practitioners full data
+      payments: [],
+      appointments: []
+    };
+
+    // Helper: safe fetch wrapper
+    async function safeFetch(url, opts = {}) {
+      opts.headers = opts.headers || {};
+      if (!opts.skipAuth) opts.headers['Authorization'] = `Bearer ${token}`;
+      if (!opts.headers['Content-Type'] && !(opts.body instanceof FormData)) opts.headers['Content-Type'] = 'application/json';
+      try {
+        const res = await fetch(url, opts);
+        const text = await res.text();
+        let json = {};
+        try { json = text ? JSON.parse(text) : {}; } catch(e){ json = { raw: text }; }
+        return { ok: res.ok, status: res.status, data: json };
+      } catch (e) {
+        console.error("Network fetch failed", e);
+        return { ok: false, status: 0, data: { success:false, message: 'Network error' } };
+      }
+    }
+
+    // ========= Main loader =========
+    async function loadDashboard() {
+      // fetch admin dashboard
+      const resp = await safeFetch(`${API_ADMIN}/dashboard`);
+      if (!resp.ok) {
+        console.error("Dashboard fetch failed", resp);
+        alert("Failed to load dashboard data");
+        return;
+      }
+      const data = resp.data;
+      const payload = data.success ? data : { stats: data.stats || data, recent: data.recent || {} };
+
+      GLOBAL.stats = payload.stats || {};
+      GLOBAL.recent = payload.recent || {};
+      GLOBAL.appointments = GLOBAL.recent.appointments || [];
+
+      // populate KPI numbers
+      document.getElementById("stat-users").textContent = GLOBAL.stats.totalUsers || 0;
+      document.getElementById("stat-practitioners").textContent = GLOBAL.stats.totalPractitioners || 0;
+      document.getElementById("stat-appointments").textContent = GLOBAL.stats.totalAppointments || 0;
+      document.getElementById("stat-revenue").textContent = "₹" + ((GLOBAL.stats.totalRevenue || 0)).toLocaleString();
+
+      // small growth badges (if backend provided comparisons)
+      document.getElementById("growth-users").textContent = GLOBAL.stats.userGrowth ? `↑ ${GLOBAL.stats.userGrowth}%` : '';
+      document.getElementById("growth-pract").textContent = GLOBAL.stats.practitionerGrowth ? `↑ ${GLOBAL.stats.practitionerGrowth}%` : '';
+      document.getElementById("growth-apps").textContent = GLOBAL.stats.appointmentGrowth ? `↑ ${GLOBAL.stats.appointmentGrowth}%` : '';
+      document.getElementById("growth-rev").textContent = GLOBAL.stats.revenueGrowth ? `↑ ${GLOBAL.stats.revenueGrowth}%` : '';
+
+      // payments list via admin endpoint
+      const paymentsResp = await safeFetch(`${API_ADMIN}/payments`);
+      GLOBAL.payments = paymentsResp.ok && paymentsResp.data.success ? paymentsResp.data.payments : (paymentsResp.data.payments || []);
+
+      // fetch full users/practitioners lists from public users API
+      await Promise.all([ fetchUsersList(), fetchPractitionersList() ]);
+
+      // render UI pieces (users/practitioners come from the API endpoints above)
+      renderUsersTable(GLOBAL.users);
+      renderPractitioners(GLOBAL.practitioners);
+      renderAppointmentsTable(GLOBAL.appointments);
+      renderPaymentsTable(GLOBAL.payments);
+      renderRecentActivity(GLOBAL.recent.activities || []);
+      renderChartsFromStats(GLOBAL);
+      populatePractitionerFilter(GLOBAL.practitioners);
+    }
+
+    // ========= Fetch users & practitioners =========
+    async function fetchUsersList() {
+      // get only normal users (exclude admin/practitioner)
+      const resp = await safeFetch(`${API_USERS}?role=user`, { skipAuth: true });
+      if (resp.ok && resp.data && resp.data.users) {
+        GLOBAL.users = resp.data.users.map(u => ({ id: u._id || u.id || u.email, ...u }));
+      } else {
+        GLOBAL.users = []; // fallback
+      }
+    }
+
+    async function fetchPractitionersList() {
+      const resp = await safeFetch(`${API_USERS}?role=practitioner`, { skipAuth: true });
+      if (resp.ok && resp.data && resp.data.users) {
+        GLOBAL.practitioners = resp.data.users.map(u => ({ id: u._id || u.id || u.email, ...u }));
+      } else {
+        GLOBAL.practitioners = [];
+      }
+    }
+
+    // ========= Recent activity / notifications =========
+    function renderRecentActivity(list) {
+      const container = document.getElementById('recentActivity');
+      container.innerHTML = '';
+      if (!list || list.length === 0) {
+        container.innerHTML = '<div class="text-muted small p-2">No recent activity</div>';
+        document.getElementById('notifCount').style.display = 'none';
+        return;
+      }
+      list.slice(0,7).forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'd-flex align-items-start gap-2 mb-2';
+        el.innerHTML = `<div style="width:40px"><i class="bi bi-info-circle"></i></div>
+          <div>
+            <div style="font-size:0.95rem">${item.text}</div>
+            <div class="muted-small">${new Date(item.date).toLocaleString()}</div>
+          </div>`;
+        container.appendChild(el);
+      });
+      document.getElementById('notifCount').style.display = 'inline-block';
+      document.getElementById('notifCount').textContent = list.length;
+    }
+
+    // ========= Practitioner filter population =========
+    function populatePractitionerFilter(practitioners) {
+      const select = document.getElementById('filterPractitioner');
+      select.innerHTML = `<option value="">All Practitioners</option>`;
+      practitioners.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p._id || p.id || p.email;
+        opt.textContent = p.name;
+        select.appendChild(opt);
+      });
+    }
+
+    // ========= Render charts =========
+    let chartHandles = {};
+    function renderChartsFromStats({ stats = {}, recent = {}, users = [], appointments = [], payments = [] }) {
+      // (unchanged chart logic; uses stats and appointments)
+      const apptLabels = (stats.appointmentsTrend || []).map(s=>s.label);
+      const apptValues = (stats.appointmentsTrend || []).map(s=>s.value);
+      const labels = apptLabels.length ? apptLabels : ['Users','Practitioners','Appointments','Reports'];
+      const values = apptValues.length ? apptValues : [stats.totalUsers||0, stats.totalPractitioners||0, stats.totalAppointments||0, stats.totalReports||0];
+      // ✅ Ensure practitioner chart element exists and is visible
+      const pracChartEl = document.getElementById('pracAppointmentsChart');
+      if (!pracChartEl) {
+       console.warn("pracAppointmentsChart element not found in DOM");} 
+       else {
+         pracChartEl.style.display = 'block';}
+
+
+      // appointmentsTimeChart (line)
+      const ctxA = document.getElementById('appointmentsTimeChart').getContext('2d');
+      if (chartHandles.appointmentsTimeChart) chartHandles.appointmentsTimeChart.destroy();
+      chartHandles.appointmentsTimeChart = new Chart(ctxA, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Appointments',
+            data: values,
+            /* === THEME CHANGE === */
+            borderColor: '#0d6efd',
+            backgroundColor: 'rgba(13, 110, 253, 0.12)',
+            /* === END THEME CHANGE === */
+            tension: 0.3,
+            fill: true,
+            pointRadius: 4
+          }]
+        },
+        options: { responsive:true, plugins:{legend:{display:false}} , maintainAspectRatio:false }
+      });
+
+      // practitionerBar from practitioners counts
+      const perPract = (stats.perPractitioner && stats.perPractitioner.length)
+  ? stats.perPractitioner
+  : GLOBAL.practitioners.map(p => ({
+      name: p.name || 'Unknown',
+      count: Math.floor(Math.random() * 10) + 1 // fallback sample count
+    }));
+      const ctxP = document.getElementById('practitionerBar').getContext('2d');
+      if (chartHandles.practitionerBar) chartHandles.practitionerBar.destroy();
+      chartHandles.practitionerBar = new Chart(ctxP, {
+        type: 'bar',
+        /* === THEME CHANGE === */
+        data: { labels: perPract.map(p=>p.name), datasets:[{ label:'Appointments', data: perPract.map(p=>p.count), backgroundColor:'#ffc107' }] },
+        /* === END THEME CHANGE === */
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
+      });
+
+      // revenueBreakdown
+      const paid= stats.paidRevenue || (GLOBAL.payments.reduce((s,p)=> s + (p.status==='paid'? p.amount: 0), 0));
+      const pending= stats.pendingRevenue || (GLOBAL.payments.reduce((s,p)=> s + (p.status==='pending'? p.amount: 0), 0));
+      const ctxR = document.getElementById('revenueBreakdown').getContext('2d');
+      if (chartHandles.revenueBreakdown) chartHandles.revenueBreakdown.destroy();
+      chartHandles.revenueBreakdown = new Chart(ctxR, {
+        type: 'doughnut',
+        data:{ labels:['Paid','Pending'], datasets:[{ data:[paid || 0, pending || 0], backgroundColor:['#20c997','#ffc107'] }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}
+      });
+
+      // statusDoughnut
+      const statusCounts = stats.statusCounts || computeStatusCounts(GLOBAL.appointments);
+      const ctxS = document.getElementById('statusDoughnut').getContext('2d');
+      if (chartHandles.statusDoughnut) chartHandles.statusDoughnut.destroy();
+      chartHandles.statusDoughnut = new Chart(ctxS, {
+        type:'doughnut',
+        data:{ labels:Object.keys(statusCounts), datasets:[{ data:Object.values(statusCounts), backgroundColor:['#ffc107','#20c997','#ff6b6b'] }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}
+      });
+
+      // top practitioners widget
+      const topEl = document.getElementById('topPractitioners');
+      topEl.innerHTML = '';
+      const sorted = perPract.slice().sort((a,b)=> (b.count||0) - (a.count||0)).slice(0,5);
+      sorted.forEach((p,i)=> {
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center justify-content-between';
+        row.innerHTML = `<div><strong>${i+1}. ${p.name}</strong><div class="muted-small">${p.count || 0} completed</div></div>
+                          <div class="muted-small">${Math.min(100, (p.count||0)*10)}%</div>`;
+        topEl.appendChild(row);
+      });
+
+      // revenue progress
+      const target = stats.revenueTarget || ((stats.totalRevenue || 0) * 1.2);
+      const percent = target ? Math.round(((stats.totalRevenue || 0) / target) * 100) : 0;
+      document.getElementById('revPercent').textContent = percent + '%';
+      document.getElementById('revProgress').style.width = percent + '%';
+
+      // Upcoming & most active
+      renderUpcomingAppointments(GLOBAL.appointments);
+      renderMostActiveUser(GLOBAL.users);
+      renderPractitionerAppointmentsChart(perPract);
+    }
+
+    function computeStatusCounts(appointments) {
+      const out = { pending:0, completed:0, missed:0 };
+      (appointments||[]).forEach(a=>{
+        const s = (a.status||'pending').toLowerCase();
+        out[s] = (out[s]||0) + 1;
+      });
+      return out;
+    }
+
+    function renderPractitionerAppointmentsChart(perPractArr){
+      const ctx = document.getElementById('pracAppointmentsChart').getContext('2d');
+      if (chartHandles.pracAppointmentsChart) chartHandles.pracAppointmentsChart.destroy();
+      chartHandles.pracAppointmentsChart = new Chart(ctx, {
+        type:'bar',
+        /* === THEME CHANGE === */
+        data:{ labels: perPractArr.map(p=>p.name), datasets:[ { data: perPractArr.map(p=>p.count||0), backgroundColor: '#0d6efd' } ] },
+        /* === END THEME CHANGE === */
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+      });
+    }
+
+    function renderUpcomingAppointments(appointments){
+      const el = document.getElementById('upcomingList');
+      el.innerHTML = '';
+      if (!appointments || appointments.length===0){ el.innerHTML = '<div class="muted-small">No upcoming appointments</div>'; return; }
+      const today = new Date().toISOString().slice(0,10);
+      const todays = appointments.filter(a => a.date && a.date.startsWith(today)).slice(0,6);
+      todays.forEach(a=>{
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center justify-content-between mb-2';
+        row.innerHTML = `<div><div><strong>${a.userId?.name || 'Unknown'}</strong> with <em>${a.practitionerId?.name||'Unknown'}</em></div>
+                          <div class="muted-small">${a.time || '—'} | ${a.type || 'Consultation'}</div></div>
+                          <div><span class="badge ${a.status==='paid'?'badge-paid':''}">${a.status}</span></div>`;
+        el.appendChild(row);
+      });
+    }
+
+    function renderMostActiveUser(users){
+      const el = document.getElementById('mostActiveUser');
+      el.innerHTML = '';
+      if (!users || users.length===0){ el.innerHTML = '<div class="muted-small">No users</div>'; return; }
+      const sorted = users.slice().sort((a,b)=> (b.appointmentsCount||0) - (a.appointmentsCount||0));
+      const top = sorted[0] || {};
+      el.innerHTML = `<div style="display:flex; gap:10px; align-items:center;">
+        <div class="avatar">${(top.name||'U').slice(0,1)}</div>
+        <div>
+          <div><strong>${top.name || '—'}</strong></div>
+          <div class="muted-small">${top.appointmentsCount || 0} appointments</div>
+        </div>
+      </div>`;
+    }
+
+    // ========= USERS: render, search, pagination, edit/delete =========
+    const USERS_PER_PAGE = 6;
+    let userPage = 1;
+    function renderUsersTable(users) {
+      // users expected to be already only role=user
+      GLOBAL.users = users.map(u => ({ id: u._id || u.id || u.email, ...u }));
+
+      const search = document.getElementById('userSearch').value.trim().toLowerCase();
+      const filtered = GLOBAL.users.filter(u => {
+        if (!search) return true;
+        return (u.name||'').toLowerCase().includes(search) || (u.email||'').toLowerCase().includes(search) || (u.role||'').toLowerCase().includes(search);
+      });
+
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / USERS_PER_PAGE));
+      if (userPage > totalPages) userPage = totalPages;
+      const start = (userPage - 1) * USERS_PER_PAGE;
+      const pageItems = filtered.slice(start, start + USERS_PER_PAGE);
+
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = '';
+      pageItems.forEach((u, idx) => {
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `<td>${start + idx + 1}</td>
+          <td><div style="display:flex;align-items:center;"><div class="avatar">${(u.name||'U').slice(0,1)}</div>${u.name}</div></td>
+          <td>${u.email || '—'}</td>
+          <td><span class="badge-status ${u.role==='admin'?'badge-completed':''}">${u.role || 'user'}</span></td>
+          <td>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-outline-primary btn-edit-user" data-id="${u.id}"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-danger btn-delete-user" data-id="${u.id}"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+
+      // pagination
+      renderUserPagination(totalPages);
+      document.getElementById('userCount').textContent = `${total} users found`;
+    }
+
+    function renderUserPagination(totalPages) {
+      const ul = document.getElementById('userPagination');
+      ul.innerHTML = '';
+      for (let i=1;i<=totalPages;i++){
+        const li = document.createElement('li');
+        li.className = 'page-item ' + (i===userPage ? 'active' : '');
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener('click', (e)=>{ e.preventDefault(); userPage = i; renderUsersTable(GLOBAL.users); });
+        ul.appendChild(li);
+      }
+    }
+
+    // search handlers
+    document.getElementById('userSearch').addEventListener('input', ()=>{ userPage=1; renderUsersTable(GLOBAL.users); });
+    document.getElementById('resetUsers').addEventListener('click', async ()=>{ document.getElementById('userSearch').value=''; userPage=1; await fetchUsersList(); renderUsersTable(GLOBAL.users); });
+
+    // Delegated listeners for edit/delete
+    document.addEventListener('click', async (e)=>{
+      const editBtn = e.target.closest('.btn-edit-user');
+      const delBtn = e.target.closest('.btn-delete-user');
+      if (editBtn) {
+        const id = editBtn.dataset.id;
+        openEditUserModal(id);
+      } else if (delBtn) {
+        const id = delBtn.dataset.id;
+        await confirmDeleteUser(id);
+      }
+    });
+
+    // Edit modal (PUT /api/users/:id)
+    let editingUserId = null;
+    async function openEditUserModal(id){
+      const user = GLOBAL.users.find(u => (u.id == id || u._id == id || u.email == id));
+      if (!user) { alert('User not found'); return; }
+      editingUserId = id;
+      document.getElementById('editUserName').textContent = user.name + ' (' + (user.email || '') + ')';
+      document.getElementById('editUserRole').value = user.role || 'user';
+      const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+      modal.show();
+    }
+    document.getElementById('saveUserBtn').addEventListener('click', async ()=>{
+      const newRole = document.getElementById('editUserRole').value;
+      if (!editingUserId) return;
+      // send PUT to /api/users/:id (auth required)
+      const putResp = await safeFetch(`${API_USERS}/${editingUserId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ role: newRole })
+      });
+      if (putResp.ok && putResp.data && putResp.data.success) {
+        // refresh users list from server
+        await fetchUsersList();
+        renderUsersTable(GLOBAL.users);
+        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+      } else {
+        // fallback: update locally and notify
+        const u = GLOBAL.users.find(u => u.id == editingUserId || u._id == editingUserId);
+        if (u) u.role = newRole;
+        renderUsersTable(GLOBAL.users);
+        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+        alert('Role updated locally. Server update failed or endpoint not available.');
+      }
+    });
+
+    // delete user: DELETE /api/users/:id
+
+    async function confirmDeleteUser(id) {
+  if (!confirm('Delete user? This action cannot be undone.')) return;
+  const del = await safeFetch(`${API_USERS}/${id}`, {
+  method: 'DELETE',
+  headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+});
+  if (del.ok && (del.status === 200 || del.status === 204 || del.data.success)) {
+    await fetchUsersList();
+    renderUsersTable(GLOBAL.users);
+    alert('User deleted successfully.');
+  } else {
+    console.error('Delete failed:', del);
+    alert('Server did not delete user. Check backend DELETE /api/users/:id route.');
+  }
+}
+
+
+    // ========= Practitioners =========
+    function renderPractitioners(practitioners) {
+      const list = (practitioners || []).map(p => ({ ...p, rating: p.rating || (Math.round(Math.random()*20)/4 + 3), availability: p.availability || 'Mon-Fri' }));
+      const tbody = document.getElementById('practitionerTableBody');
+      tbody.innerHTML = '';
+      list.forEach((p,i)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td>
+          <td><div class="avatar">${(p.name||'P').slice(0,1)}</div></td>
+          <td>${p.name}</td>
+          <td>${p.email || '—'}</td>
+          <td>${p.specialization || '-'}</td>
+          <td>${(p.rating||0).toFixed(1)}</td>
+          <td>${p.availability}</td>
+          <td><button class="btn btn-sm btn-outline-primary btn-view-prac" data-id="${p._id||p.id||p.email}"><i class="bi bi-eye"></i></button></td>`;
+        tbody.appendChild(tr);
+      });
+
+      // delegate view profile
+      document.querySelectorAll('.btn-view-prac').forEach(b=>{
+        b.addEventListener('click', (e)=>{
+          const id = b.dataset.id;
+          const p = list.find(x => x._id == id || x.id == id || x.email == id);
+          if (!p) return alert('Not found');
+          alert(`Practitioner: ${p.name}\nEmail: ${p.email}\nSpecialization: ${p.specialization||'-'}\nRating: ${p.rating}`);
+        });
+      });
+    }
+
+    // ========= Appointments table =========
+    function renderAppointmentsTable(apps) {
+      const filter = document.getElementById('apptFilterStatus').value;
+      const list = (apps || []).filter(a => !filter || (a.status || '').toLowerCase() === filter);
+      const tbody = document.getElementById('appointmentTableBody');
+      tbody.innerHTML = '';
+      list.forEach((a,i) => {
+        const time = a.time || (a.date && a.date.slice(11,16)) || '—';
+        const dateShort = a.date ? (a.date.slice(0,10)) : '—';
+        const statusBadge = (s=>{
+          s = (s||'').toLowerCase();
+          if (s==='paid' || s==='completed') return `<span class="badge-status badge-completed">${s}</span>`;
+          if (s==='pending') return `<span class="badge-status badge-pending">${s}</span>`;
+          if (s==='missed') return `<span class="badge-status badge-missed">${s}</span>`;
+          return `<span class="badge-status">${s}</span>`;
+        })(a.status);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td>
+          <td>${a.userId?.name || 'Unknown'}</td>
+          <td>${a.practitionerId?.name || 'Unknown'}</td>
+          <td>${dateShort}</td>
+          <td>${time}</td>
+          <td>${a.type || 'Consultation'}</td>
+          <td>${statusBadge}</td>
+          <td>
+            <div class="d-flex gap-1">
+              <button class="btn btn-sm btn-success btn-mark-completed" data-id="${a._id||a.id}">Complete</button>
+              <button class="btn btn-sm btn-outline-secondary btn-reschedule" data-id="${a._id||a.id}">Reschedule</button>
+
+            </div>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('apptFilterStatus').addEventListener('change', ()=> renderAppointmentsTable(GLOBAL.appointments));
+    document.getElementById('refreshAppointments').addEventListener('click', async ()=> {
+      await loadDashboard();
+      alert('Appointments refreshed.');
+    });
+
+    // ✅ Appointment Complete & Reschedule actions
+document.addEventListener('click', async (e) => {
+  const completeBtn = e.target.closest('.btn-mark-completed');
+  const rescheduleBtn = e.target.closest('.btn-reschedule');
+
+  if (completeBtn) {
+    const id = completeBtn.dataset.id;
+    if (!confirm("Mark this appointment as completed?")) return;
+    const resp = await safeFetch(`${API_ADMIN}/appointments/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ status: "completed" }),
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+    if (resp.ok) {
+      alert("Appointment marked as completed!");
+      await loadDashboard();
+    } else {
+      alert("Failed to complete appointment.");
+    }
+  }
+
+  if (rescheduleBtn) {
+    const id = rescheduleBtn.dataset.id;
+    const newDate = prompt("Enter new date (YYYY-MM-DD):");
+    if (!newDate) return;
+    const resp = await safeFetch(`${API_ADMIN}/appointments/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ date: newDate, status: "pending" }),
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+    if (resp.ok) {
+      alert("Appointment rescheduled!");
+      await loadDashboard();
+    } else {
+      alert("Failed to reschedule appointment.");
+    }
+  }
+});
+
+
+    // ========= Payments table & export =========
+    function renderPaymentsTable(payments) {
+      const filter = document.getElementById('paymentsStatusFilter').value;
+      const list = (payments || []).filter(p => !filter || (p.status||'').toLowerCase() === filter);
+      const tbody = document.getElementById('paymentTableBody');
+      tbody.innerHTML = '';
+      list.forEach((p,i) => {
+        const date = p.date ? new Date(p.date).toLocaleDateString() : '—';
+        
+        const statusClass = p.status === 'paid' ? 'badge-paid' : (p.status === 'pending' ? 'badge-pending' : '');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td>
+          <td>${p.userId?.name || 'Unknown'}</td>
+          <td>₹${p.amount || 0}</td>
+          <td>${p.method || '-'}</td>
+          <td><span class="badge-status ${statusClass}">${p.status || '—'}</span></td>
+          <td>${date}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('paymentsStatusFilter').addEventListener('change', ()=> renderPaymentsTable(GLOBAL.payments));
+
+    // export CSV
+    function exportPaymentsCSV(){
+      const rows = [['#','user','amount','method','transactionId','status','date']];
+      (GLOBAL.payments || []).forEach((p,i)=>{
+        rows.push([i+1, (p.userId?.name||''), p.amount || 0, p.method || '', p.transactionId || p.txId || '', p.status || '', p.date || '']);
+      });
+      const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `payments_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    document.getElementById('exportPayments').addEventListener('click', exportPaymentsCSV);
+
+    // ========= Filters apply (date/practitioner) =========
+    document.getElementById('applyFilters').addEventListener('click', ()=> {
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+      const prac = document.getElementById('filterPractitioner').value;
+      let filteredAppointments = (GLOBAL.recent?.appointments || GLOBAL.appointments || []).slice();
+      if (from) filteredAppointments = filteredAppointments.filter(a => a.date && a.date.slice(0,10) >= from);
+      if (to) filteredAppointments = filteredAppointments.filter(a => a.date && a.date.slice(0,10) <= to);
+      if (prac) filteredAppointments = filteredAppointments.filter(a => (a.practitionerId && (a.practitionerId._id === prac || a.practitionerId.id === prac || a.practitionerId.email === prac)));
+      renderAppointmentsTable(filteredAppointments);
+      renderChartsFromStats({ stats: GLOBAL.stats, recent: GLOBAL.recent, users: GLOBAL.users, appointments: filteredAppointments, payments: GLOBAL.payments });
+    });
+
+    // ========= Theme toggle =========
+    const themeBtn = document.getElementById('toggleTheme');
+    const savedTheme = localStorage.getItem('adminTheme');
+    if (savedTheme === 'dark') document.body.classList.add('dark');
+    themeBtn.addEventListener('click', ()=>{
+      document.body.classList.toggle('dark');
+      localStorage.setItem('adminTheme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+
+    // ========= Initial load =========
+    loadDashboard();
+
+    // ✅ Ensure charts re-render when practitioner section becomes visible
+const observer = new MutationObserver(() => {
+  const pracSection = document.getElementById("practitionerSection");
+  if (pracSection && pracSection.classList.contains("show")) {
+    if (GLOBAL.practitioners?.length) {
+      renderChartsFromStats(GLOBAL);
+    }
+  }
+});
+observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
+
+
+    // Expose some helpers for console debugging
+    window._ADMIN = {
+      reload: loadDashboard,
+      GLOBAL
+    };
+
+
+// Handle appointment Complete / Reschedule actions
+document.addEventListener('click', async (e) => {
+  const completeBtn = e.target.closest('.btn-mark-completed');
+  const rescheduleBtn = e.target.closest('.btn-reschedule');
+  
+  if (completeBtn) {
+    const id = completeBtn.dataset.id;
+    if (!confirm("Mark this appointment as completed?")) return;
+    const resp = await safeFetch(`${API_ADMIN}/appointments/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ status: "completed" })
+    });
+    if (resp.ok) {
+      alert("Appointment marked as completed");
+      await loadDashboard();
+    } else {
+      alert("Failed to update appointment");
+    }
+  }
+
+  if (rescheduleBtn) {
+    const id = rescheduleBtn.dataset.id;
+    const newDate = prompt("Enter new date (YYYY-MM-DD):");
+    if (!newDate) return;
+    const resp = await safeFetch(`${API_ADMIN}/appointments/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ date: newDate, status: "pending" })
+    });
+    if (resp.ok) {
+      alert("Appointment rescheduled");
+      await loadDashboard();
+    } else {
+      alert("Failed to reschedule");
+    }
+  }
+});
+
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+/* ------------------------------- */
+/* CSS Variables (Your Theme)      */
+/* ------------------------------- */
+:root {
+    --primary-lavender: #9a6efc;
+    --accent-lime: #a4f9a4;
+    --bg-soft-white: #f7f5fb;
+    --card-bg: #ffffff;
+    --text-dark: #333;
+    --text-light: #6a6a6a;
+    --border-color: #ece7f5;
+    --lavender-light: #f2eefc;
+    
+    --font-primary: 'Poppins', 'Segoe UI', sans-serif;
+    --font-secondary: 'Open Sans', 'Segoe UI', sans-serif;
+    
+    --rounded-sm: 8px;
+    --rounded-md: 12px;
+    --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 8px 25px rgba(154, 110, 252, 0.15);
+    --transition-fast: 0.3s ease;
+}
+
+/* ------------------------------- */
+/* Global & Base Styles            */
+/* ------------------------------- */
+body {
+    font-family: var(--font-secondary);
+    color: var(--text-dark);
+    line-height: 1.6;
+
+    /* === NEW BACKGROUND IMAGE CODE === */
+    /* This path must be correct! */
+    background-image: url('../images/img1.jpg'); 
+    background-size: cover; 
+    background-position: center center; 
+    background-attachment: fixed; 
+    background-repeat: no-repeat; 
+
+    /* This adds the overlay */
+    background-color: rgba(247, 245, 251, 0.85); 
+    background-blend-mode: soft-light;
+}
+
+h1, h2, h3, h4, h5, h6, .fw-bold {
+    font-family: var(--font-primary);
+    font-weight: 600 !important;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-lavender);
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-lavender) !important;
+}
+
+.text-lavender { color: var(--primary-lavender) !important; }
+.text-lime { color: var(--accent-lime) !important; }
+
+
+/* ------------------------------- */
+/* Navbar Customization            */
+/* ------------------------------- */
+header {
+    position: relative;
+    z-index: 10;
+}
+
+.navbar-brand.logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary-lavender);
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-dark);
+    font-weight: 500;
+    font-family: var(--font-primary);
+    position: relative;
+    padding-bottom: 5px;
+    transition: var(--transition-fast);
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-lavender);
+    transition: var(--transition-fast);
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+    width: 100%;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-lavender);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: var(--rounded-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    transition: var(--transition-fast);
+    border: none;
+    cursor: pointer;
+}
+.btn-primary-custom:hover {
+    background-color: #8655f8;
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.btn-secondary-custom {
+    background-color: var(--accent-lime);
+    color: var(--text-dark);
+    padding: 10px 22px;
+    border-radius: var(--rounded-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    transition: var(--transition-fast);
+    border: none;
+    cursor: pointer;
+}
+.btn-secondary-custom:hover {
+    background-color: #8be48b;
+    transform: translateY(-2px);
+    color: var(--text-dark);
+}
+
+
+/* ------------------------------- */
+/* 1. Hero & Search Section        */
+/* ------------------------------- */
+.hero-section {
+    padding-top: 80px;
+    padding-bottom: 80px;
+    position: relative;
+    z-index: 5;
+}
+
+.hero-section h1 {
+    font-size: 2.8rem;
+    color: #2c2c2c;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-section p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-bar-custom {
+    display: flex;
+    max-width: 800px;
+    border-radius: var(--rounded-md) !important;
+}
+
+.search-bar-custom .input-group {
+    flex: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--rounded-sm);
+    background-color: var(--bg-soft-white);
+}
+
+.search-bar-custom .input-group:first-child { border-radius: var(--rounded-sm) 0 0 var(--rounded-sm); }
+.search-bar-custom .input-group:last-of-type { border-radius: 0 var(--rounded-sm) var(--rounded-sm) 0; }
+
+
+.search-bar-custom .form-control {
+    font-family: var(--font-secondary);
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.search-bar-custom .input-group-text {
+    background-color: var(--bg-soft-white);
+}
+
+.search-bar-custom .btn {
+    flex-shrink: 0;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
+/* ------------------------------- */
+/* 2. Feature Cards Section        */
+/* ------------------------------- */
+.feature-cards-section {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    position: relative;
+    z-index: 5;
+}
+
+.feature-card-custom {
+    background-color: var(--lavender-light);
+    border-radius: var(--rounded-md) !important;
+    box-shadow: var(--shadow-light);
+    border: none !important;
+    border-bottom: 4px solid transparent !important;
+    transition: var(--transition-fast);
+    text-align: left;
+}
+
+.feature-card-custom:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.feature-card-custom i {
+    transition: var(--transition-fast);
+}
+
+.feature-card-custom:hover i {
+    animation: icon-bounce 0.6s ease;
+}
+
+@keyframes icon-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.border-bottom-lavender { border-color: var(--primary-lavender) !important; }
+.border-bottom-lime { border-color: var(--accent-lime) !important; }
+
+
+/* ------------------------------- */
+/* 3. Top Experts Section          */
+/* ------------------------------- */
+.experts-section {
+    position: relative;
+    z-index: 5;
+}
+
+.experts-section h2 {
+    font-size: 2.2rem;
+}
+
+.expert-card-custom {
+    border: none !important;
+    transition: var(--transition-fast);
+    background-color: var(--lavender-light);
+}
+
+.expert-card-custom img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.expert-card-custom .card-footer {
+    border-color: var(--border-color) !important;
+}
+
+.hover-actions-custom {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: var(--transition-fast);
+    border-radius: var(--rounded-md);
+}
+
+.expert-card-custom:hover .hover-actions-custom {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ------------------------------- */
+/* 4. How It Works Section         */
+/* ------------------------------- */
+.how-it-works-section {
+    background-color: var(--lavender-light);
+    padding-top: 60px;
+    padding-bottom: 60px;
+    border-radius: var(--rounded-md) !important;
+    position: relative;
+    z-index: 5;
+}
+
+.how-it-works-section h2 {
+    font-size: 2.2rem;
+}
+
+.step-card-custom {
+    transition: var(--transition-fast);
+}
+
+.step-card-custom:hover {
+    transform: translateY(-5px);
+}
+
+.step-card-custom i {
+    color: var(--primary-lavender);
+}
+
+
+/* ------------------------------- */
+/* 5. Testimonials Section         */
+/* ------------------------------- */
+.testimonials-section {
+    position: relative;
+    z-index: 5;
+}
+.testimonials-section h2 {
+    font-size: 2.2rem;
+}
+
+.testimonial-card-custom {
+    background-color: var(--lavender-light);
+    border: none !important;
+    border-radius: var(--rounded-md) !important;
+}
+
+.testimonial-text {
+    font-style: italic;
+    color: var(--text-light); /* Fixed a typo here: var(--text-.text-light) -> var(--text-light) */
+    position: relative;
+    padding-left: 20px;
+    border-left: 3px solid var(--accent-lime);
+}
+
+.testimonial-card-custom img {
+    border: 2px solid var(--accent-lime);
+}
+
+/* ------------------------------- */
+/* 6. Footer Section               */
+/* ------------------------------- */
+.footer-custom {
+    background-color: #2c2a3b;
+    color: #f0f0f0;
+    position: relative;
+    z-index: 5;
+}
+
+.footer-custom .logo {
+    color: #fff !important;
+}
+
+.footer-custom h5.footer-heading {
+    position: relative;
+    padding-bottom: 5px;
+}
+
+.footer-custom h5.footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--accent-lime);
+}
+
+.footer-custom ul li a:hover {
+    color: var(--accent-lime) !important;
+    padding-left: 5px !important;
+}
+
+.social-icon-custom {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    transition: var(--transition-fast);
+}
+
+.social-icon-custom:hover {
+    background-color: var(--accent-lime);
+    color: var(--text-dark);
+}
+
+.footer-custom .border-top {
+    border-color: #444 !important;
+}
+
+/* ------------------------------- */
+/* Responsive Media Queries        */
+/* ------------------------------- */
+@media (max-width: 991.98px) {
+    .search-bar-custom {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .search-bar-custom .input-group {
+        border-radius: var(--rounded-sm) !important;
+    }
+    .search-bar-custom .btn {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+    .footer-custom .footer-heading::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .footer-custom .d-flex.justify-content-center.justify-content-md-start {
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-section h1 {
+        font-size: 2.0rem;
+    }
+    .hero-section p {
+        font-size: 1rem;
+    }
+    .navbar-nav {
+        text-align: center;
+        margin-top: 10px;
+    }
+    .navbar-brand.logo {
+        margin-right: auto;
+    }
+}
+
+/* All leftover animation keyframes have been removed */
