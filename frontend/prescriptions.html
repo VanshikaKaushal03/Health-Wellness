@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Prescriptions & Reports</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f7f5fb;
+    color: #333;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .sidebar {
+    width: 240px;
+    /* === THEME CHANGE === */
+    background: linear-gradient(180deg, #0d6efd, #0a58ca);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding: 20px 15px;
+  }
+  .sidebar h4 { text-align: center; font-weight: 700; margin-bottom: 30px; }
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #eae4ff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+    font-weight: 500;
+  }
+  .sidebar a.active,
+  .sidebar a:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  .sidebar a i { font-size: 1.3rem; }
+  .logout-btn { color: #ffdede !important; }
+
+  .main-content {
+    margin-left: 240px;
+    padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .report-card {
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform .2s ease;
+  }
+  .report-card:hover { transform: translateY(-3px); }
+
+  /* === THEME CHANGE === */
+  .badge-blue {
+    background-color: #e7f0ff;
+    color: #052c65;
+  }
+
+  .btn-yellow {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: none;
+  }
+
+  .btn-yellow:hover {
+    background-color: #ffecb5;
+    color: #493802;
+  }
+
+  .main-content::-webkit-scrollbar { width: 8px; }
+  .main-content::-webkit-scrollbar-thumb { /* === THEME CHANGE === */ background: #a0c7e4; border-radius: 10px; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 70px; padding: 20px 8px; align-items: center; }
+    .sidebar h4, .sidebar a span { display: none; }
+    .main-content { margin-left: 70px; }
+  }
+</style>
+
+</head>
+<body>
+  <div class="sidebar">
+    <div>
+      <h4><i class="bi bi-heart-pulse"></i> HealthWellness</h4>
+        <a href="home.html" class="active"><i class="bi bi-house-door-fill"></i><span>Home</span></a>
+        <a href="experts.html"><i class="bi bi-person-lines-fill"></i><span>Find Experts</span></a>
+        <a href="favorites.html"><i class="bi bi-heart-fill"></i><span>Favorites</span></a>
+        <a href="health_box.html"><i class="bi bi-clipboard2-heart-fill"></i><span>Health Box</span></a>
+        <a href="payments.html"><i class="bi bi-wallet2"></i><span>Payments</span></a>
+        <a href="profile.html"><i class="bi bi-person-circle"></i><span>Profile</span></a>
+    </div>
+    <a href="#" class="logout-btn" id="logoutBtn"><i class="bi bi-box-arrow-right"></i><span>Logout</span></a>
+  </div>
+
+  <div class="main-content">
+    <h2 class="mb-4 text-dark">
+      <i class="bi bi-prescription2 me-2 text-success"></i> My Health Box: Reports & Prescriptions
+    </h2>
+    <div id="prescriptionsList">
+      <div class="alert alert-info text-center" role="alert">
+        <i class="bi bi-arrow-clockwise"></i> Loading reports...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000'; 
+    // This will hold our dummy data so the PDF generator can access it
+    let allReports = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const userId = localStorage.getItem("user_id");
+      const prescriptionsList = document.getElementById("prescriptionsList");
+
+      if (!userId) {
+        prescriptionsList.innerHTML = '<div class="alert alert-warning text-center">Please login first! Redirecting...</div>';
+        setTimeout(() => window.location.href = "login.html", 1500);
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+
+        /* ==================================================================
+           == DUMMY DATA ADDED AS REQUESTED ==
+           ==================================================================
+        */
+        const dummyReports = [
+            {
+                _id: "report1",
+                practitionerId: { name: "Dr. Emily Carter" },
+                booked: "2025-10-20T00:00:00.000Z",
+                lastVisit: "2025-10-20T00:00:00.000Z",
+                pdfLink: "#", // Placeholder link
+                medications: [
+                    { name: "Metformin", dosage: "500mg", frequency: "Twice a day" },
+                    { name: "Aspirin", dosage: "81mg", frequency: "Once a day" }
+                ]
+            },
+            {
+                _id: "report2",
+                practitionerId: { name: "Dr. Ben Jacobs" },
+                booked: "2025-09-15T00:00:00.000Z",
+                lastVisit: "2025-09-15T00:00:00.000Z",
+                pdfLink: "#", // Placeholder link
+                medications: [
+                    { name: "Lisinopril", dosage: "10mg", frequency: "Once a day" }
+                ]
+            }
+        ];
+        
+        // Store in global variable and render
+        allReports = dummyReports; 
+        renderReports(allReports); 
+        
+        } catch (err) {
+          console.error("Prescriptions load error:", err);
+          prescriptionsList.innerHTML = `<div class="alert alert-danger">Error loading reports: ${err.message}</div>`;
+        }
+
+        // ✅ MODIFIED: Event listener now handles both "View" and "Download"
+        document.getElementById("prescriptionsList").addEventListener("click", function(e) {
+            const viewBtn = e.target.closest(".btn-view-report");
+            const downloadBtn = e.target.closest(".btn-download-report");
+
+            let action = null;
+            let button = null;
+
+            if (viewBtn) {
+                action = 'view';
+                button = viewBtn;
+            } else if (downloadBtn) {
+                action = 'download';
+                button = downloadBtn;
+            }
+
+            if (action && button) {
+                e.preventDefault(); // Stop any default action
+                const reportId = button.dataset.id;
+                
+                // Find the report data from the dummy array
+                const report = (allReports || []).find(r => r._id === reportId);
+                
+                if (report) {
+                    generateFakePDF(report, action); // Pass the action ('view' or 'download')
+                } else {
+                    alert("Error: Report data not found.");
+                }
+            }
+        });
+    });
+
+    /**
+     * ✅ This function builds the HTML cards for each report.
+     */
+    function renderReports(reports) {
+        const container = document.getElementById("prescriptionsList");
+        
+        container.innerHTML = reports.map(r => {
+            const medicationsHTML = r.medications && r.medications.length > 0
+                ? r.medications.map(m => `<li><i class="bi bi-capsule-pill text-success me-2"></i><strong>${m.name}</strong> (${m.dosage}, ${m.frequency})</li>`).join('')
+                : '<li><span class="text-muted">No specific medications listed.</span></li>';
+
+            return `
+            <div class="report-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-1">${r.practitionerId.name}</h5>
+                  <p class="text-muted mb-0">Date: ${new Date(r.booked).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <span class="badge badge-blue p-2">${r.medications.length} Medications</span>
+                </div>
+              </div>
+              <hr>
+              <p class="mb-2"><strong>Medications Prescribed:</strong></p>
+              <ul class="list-unstyled mb-3">
+                ${medicationsHTML}
+              </ul>
+              <div>
+                <button class="btn btn-primary btn-sm btn-view-report" data-id="${r._id}">
+                  <i class="bi bi-eye-fill me-1"></i> View Full Report (PDF)
+                </button>
+                
+                <button class="btn btn-yellow btn-sm btn-download-report" data-id="${r._id}">
+                  <i class="bi bi-download me-1"></i> Download
+                </button>
+              </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    /**
+     * ✅ MODIFIED: Function now accepts an 'action' to either 'view' or 'download'
+     */
+    function generateFakePDF(report, action = 'download') {
+        // Ensure jsPDF is loaded
+        if (typeof window.jspdf === 'undefined') {
+            alert("PDF generation library is not loaded.");
+            return;
+        }
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // --- Start creating the PDF content ---
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text("Health & Wellness - Medical Report", 20, 20);
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        doc.text(`Patient ID: ${localStorage.getItem("user_id") || 'USER_001'}`, 20, 30);
+        doc.text(`Practitioner: ${report.practitionerId.name}`, 20, 35);
+        doc.text(`Date: ${new Date(report.booked).toLocaleDateString()}`, 20, 40);
+        
+        doc.setLineWidth(0.5);
+        doc.line(20, 45, 190, 45); // Horizontal line
+
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Prescribed Medications", 20, 55);
+
+        let yPos = 65; // Starting Y position for the list
+        if (report.medications && report.medications.length > 0) {
+            report.medications.forEach(med => {
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.text(`- ${med.name}`, 25, yPos);
+                
+                doc.setFont("helvetica", "normal");
+                doc.text(`Dosage: ${med.dosage}`, 30, yPos + 5);
+                doc.text(`Frequency: ${med.frequency}`, 30, yPos + 10);
+                yPos += 20; // Move down for the next medication
+            });
+        } else {
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "italic");
+            doc.text("No specific medications listed for this report.", 25, yPos);
+            yPos += 10;
+        }
+
+        doc.line(20, yPos, 190, yPos); // Horizontal line
+        yPos += 10;
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text("Disclaimer: This is a generated document. Always consult with your healthcare provider.", 20, yPos);
+        doc.text("Health & Wellness, © 2025", 20, yPos + 5);
+        // --- End creating the PDF content ---
+
+        // ✅ MODIFIED: Choose action based on the button clicked
+        if (action === 'view') {
+            // This opens the PDF in a new browser tab
+            doc.output('dataurlnewwindow'); 
+        } else {
+            // This forces a download
+            doc.save(`prescription-${report._id}.pdf`);
+        }
+    }
+
+    // Logout Functionality
+    const logoutBtn = document.getElementById("logoutBtn");
+    if(logoutBtn) {
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.href = "login.html";
+      });
+    }
+
+  </script>
+</body>
+</html>

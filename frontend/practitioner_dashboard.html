@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Practitioner Dashboard — Health & Wellness</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Profile Animations and Mini Stats */
+    .animate-profile {
+      animation: fadeInUp 0.7s ease both;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-pic:hover {
+      transform: translateX(-50%) scale(1.05);
+      transition: all .3s ease;
+    }
+
+    .stat-mini h4 {
+      color: var(--theme-blue);
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .stat-mini p {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      transition: all .2s ease;
+    }
+
+
+    :root {
+      /* === THEME CHANGE === */
+      --theme-blue: #0d6efd;
+      --theme-blue-dark: #0a58ca;
+      --theme-yellow: #ffc107;
+      /* === END THEME CHANGE === */
+
+      --accent-coral: #ff6f91;
+      --accent-sky: #5bc0de;
+      --bg: #f6f7fb;
+      --card-radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--bg);
+      color: #222;
+      display: flex;
+      min-height: 100vh;
+      overflow: auto;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      /* === THEME CHANGE === */
+      background: linear-gradient(180deg, var(--theme-blue), var(--theme-blue-dark));
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px 14px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .brand h3 {
+      margin: 6px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0 0;
+    }
+
+    .nav-list li {
+      padding: 12px 14px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      transition: all .18s ease;
+    }
+
+    .nav-list li i {
+      font-size: 1.12rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-list li:hover,
+    .nav-list li.active {
+      background: rgba(255, 255, 255, 0.12);
+      /* === THEME CHANGE === */
+      border-left: 4px solid var(--theme-yellow);
+      transform: translateX(2px);
+    }
+
+    .sidebar footer {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      padding: 10px 6px;
+    }
+
+
+    .sidebar {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+    }
+
+
+    /* Main area */
+    .main {
+      flex: 1;
+      overflow: auto;
+      overflow-x: hidden;
+      padding: 28px;
+      max-height: none;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    /* === THEME CHANGE === */
+    .header-row h2 {
+      color: var(--theme-blue);
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .header-row .meta {
+      color: #666;
+      font-weight: 500;
+    }
+
+    /* Cards */
+    .card {
+      border-radius: var(--card-radius);
+      border: none;
+      box-shadow: 0 8px 26px rgba(66, 32, 124, 0.08);
+      background: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      padding: 20px;
+      border-radius: 12px;
+      color: #fff;
+      /* === THEME CHANGE === */
+      background: linear-gradient(135deg, var(--theme-blue), var(--theme-blue-dark));
+      text-align: center;
+    }
+
+    .stat h3 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .stat p {
+      margin: 0;
+      opacity: 0.95;
+      font-weight: 600;
+    }
+
+    /* section spacing */
+    section {
+      margin-bottom: 20px;
+    }
+
+    /* tables */
+    .table thead th {
+      border-bottom: none;
+    }
+
+    /* === THEME CHANGE === */
+    .badge-upcoming {
+      background: linear-gradient(90deg, var(--theme-yellow), #ffda6a);
+      color: #212529;
+    }
+
+    .badge-completed {
+      background: linear-gradient(90deg, var(--theme-blue), #589bff);
+      color: #fff;
+    }
+
+    .badge-missed {
+      background: linear-gradient(90deg, #ff6f91, #ffb3c6);
+      color: #fff;
+    }
+
+    /* big canvas */
+    .big-canvas {
+      height: 450px;
+      max-height: 60vh;
+    }
+
+    .medium-canvas {
+      height: 280px;
+      max-height: 40vh;
+    }
+
+
+    /* reports list */
+    .reports-table tr {
+      cursor: pointer;
+    }
+
+    .reports-table tr:hover {
+      background: #fbfbff;
+    }
+
+    /* modal larger */
+    .modal-lg {
+      max-width: 1100px;
+    }
+
+    /* responsiveness */
+    @media (max-width: 1100px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .sidebar {
+        width: 80px
+      }
+
+      .sidebar .brand h3 {
+        display: none
+      }
+
+      .nav-list li span {
+        display: none
+      }
+    }
+
+    @media (max-width: 700px) {
+      .stats-grid {
+        grid-template-columns: 1fr
+      }
+
+      .main {
+        padding: 14px
+      }
+
+      .sidebar {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+        <i class="bi bi-heart-pulse-fill" style="font-size:28px;color:#fff"></i>
+        <h3>Practitioner</h3>
+        <div style="font-size:13px;opacity:0.95" id="practitionerNameHeader">Dr. Loading...</div>
+      </div>
+
+      <ul class="nav-list">
+        <li class="active" data-section="dashboard"><i class="bi bi-speedometer2"></i><span>Dashboard</span></li>
+        <li data-section="patients"><i class="bi bi-people-fill"></i><span>Patients</span></li>
+        <li data-section="revenue"><i class="bi bi-currency-dollar"></i><span>Revenue</span></li>
+        <li data-section="reports"><i class="bi bi-file-earmark-text"></i><span>Reports</span></li>
+        <li data-section="profile"><i class="bi bi-person-circle"></i><span>Profile</span></li>
+        <li id="logoutBtn"><i class="bi bi-box-arrow-right"></i><span>Logout</span></li>
+      </ul>
+    </div>
+    <footer>© 2025 Health & Wellness</footer>
+  </aside>
+
+  <main class="main">
+    <div class="header-row">
+      <div>
+        <h2 id="welcomeHeader">Welcome back, Dr. ...</h2>
+        <div class="meta" id="currentDate">...</div>
+      </div>
+      <div>
+      </div>
+    </div>
+
+    <div id="dashboard" class="section">
+      <div class="stats-grid">
+        <div class="stat card">
+          <p style="opacity:0.9">Appointments Today</p>
+          <h3 id="stat-today">0</h3>
+        </div>
+        <div class="stat card" style="background:linear-gradient(135deg,var(--theme-yellow),#ffda6a)">
+          <p style="opacity:0.9; color: #333;">New Patients (30d)</p>
+          <h3 id="stat-new" style="color: #333;">0</h3>
+        </div>
+        <div class="stat card" style="background:linear-gradient(135deg,#ffb88c,#ff6f91)">
+          <p style="opacity:0.9">Revenue This Month</p>
+          <h3 id="stat-rev">₹0</h3>
+        </div>
+      </div>
+
+      <section class="card p-3 mb-3">
+        <h5 class="mb-2"><i class="bi bi-calendar3 me-2"></i>Upcoming Appointments</h5>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="upcomingBody">
+              <tr>
+                <td colspan="5" class="text-center text-muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card p-3">
+        <h5 class="mb-2"><i class="bi bi-clock-history me-2"></i>Past Appointments</h5>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="pastBody">
+              <tr>
+                <td colspan="5" class="text-center text-muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="patients" class="section" style="display:none">
+      <section class="card p-3 mb-3">
+        <h5><i class="bi bi-people me-2"></i>Patients who booked appointments</h5>
+        <p class="text-muted">List of patients (booked with you) — sorted by next appointment.</p>
+        <div class="table-responsive mt-3">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Next Appointment</th>
+                <th>Time</th>
+                <th>Upcoming / Past</th>
+              </tr>
+            </thead>
+            <tbody id="patientsList">
+              <tr>
+                <td colspan="4" class="text-center text-muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="revenue" class="section" style="display:none">
+      <section class="card p-3 mb-3">
+        <h5><i class="bi bi-graph-up me-2"></i>Practice Analytics</h5>
+        <div class="row mt-3 g-3">
+          <div class="col-md-4">
+            <div class="card p-3">
+              <p class="mb-1 text-muted">Total Revenue (YTD)</p>
+              <h4 id="revTotal">₹0</h4>
+              <p class="text-muted small">Avg per appointment: <strong id="revAvg">₹0</strong></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3">
+              <p class="mb-1 text-muted">Patients Served</p>
+              <h4 id="revPatients">0</h4>
+              <p class="text-muted small">Returning vs New on the right</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-3">
+              <p class="mb-1 text-muted">Pending Payments</p>
+              <h4 id="revPending">₹0</h4>
+              <p class="text-muted small">Recent outstanding invoices</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card p-3 mb-3">
+        <h5 class="mb-3"><i class="bi bi-bar-chart-line me-2"></i>Monthly Revenue Trend</h5>
+        <canvas id="monthlyRevenue" class="medium-canvas"></canvas>
+      </section>
+
+      <section class="card p-3 mb-3">
+        <h5 class="mb-3"><i class="bi bi-calendar-check2 me-2"></i>Appointments per Month</h5>
+        <canvas id="appointmentsPerMonth" class="medium-canvas"></canvas>
+      </section>
+
+      <section class="card p-3">
+        <h5 class="mb-3"><i class="bi bi-pie-chart me-2"></i>Patient Type</h5>
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <canvas id="patientTypePie" style="height:420px"></canvas>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1"><strong>New Patients</strong></p>
+            <p class="text-muted">Patients who visited for the first time in the selected range.</p>
+            <p class="mb-1"><strong>Returning Patients</strong></p>
+            <p class="text-muted">Patients who had prior visits.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="reports" class="section" style="display:none">
+      <section class="card p-3 mb-3">
+        <h5><i class="bi bi-file-medical me-2"></i>Patient Reports</h5>
+        <p class="text-muted">Click "View" to see the patient's report and measurement trends.</p>
+
+        <div class="table-responsive mt-3">
+          <table class="table reports-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Diagnosis</th>
+                <th>Report Date</th>
+                <th>Last Visit</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reportsList">
+              <tr>
+                <td colspan="5" class="text-center text-muted">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="profile" class="section" style="display:none">
+      <section class="card p-0 overflow-hidden shadow-lg border-0 animate-profile">
+        <div style="background:linear-gradient(135deg,var(--theme-blue),var(--theme-yellow));color:white;padding:30px;">
+          <div class="d-flex align-items-center gap-4">
+            <img src="https://via.placeholder.com/120" id="profileImg"
+              class="rounded-circle border border-4 border-white shadow-lg"
+              style="width:120px;height:120px;object-fit:cover;">
+            <div>
+              <h3 class="fw-bold mb-1" id="profileName">Dr. ...</h3>
+              <p class="mb-1"><i class="bi bi-heart-pulse me-1"></i><span id="profileSpecialization">...</span></p>
+              <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-success"><span id="profileExperience">0</span> yrs exp</span>
+                <span class="badge bg-dark"><span id="profileFee">₹0</span>/session</span>
+              </div>
+              <div class="text-white mt-1">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
+                <small id="profileRating">4.5 / 5</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 text-center">
+          <p class="text-muted small mb-4" id="profileBio">
+            ...
+          </p>
+
+          <div class="d-flex justify-content-around flex-wrap mb-4">
+            <div class="stat-mini">
+              <h4 id="statPatientsProfile">0</h4>
+              <p class="text-muted small">Patients Served</p>
+            </div>
+            <div class="stat-mini">
+              <h4 id="statAppointmentsProfile">0</h4>
+              <p class="text-muted small">Appointments</p>
+            </div>
+            <div class="stat-mini">
+              <h4 id="statRevenueProfile">₹0</h4>
+              <p class="text-muted small">Total Earnings</p>
+            </div>
+            <div class="stat-mini">
+              <h4>4.5★</h4>
+              <p class="text-muted small">Avg Rating</p>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+              <i class="bi bi-pencil-square me-1"></i>Edit Profile
+            </button>
+            <button class="btn btn-outline-success btn-sm" id="availabilityBtn">
+              <i class="bi bi-calendar2 me-1"></i>Set Availability
+            </button>
+          </div>
+
+          <div class="mt-4 text-muted small">
+            <p class="mb-1"><i class="bi bi-envelope me-2"></i><span id="profileEmail">...</span></p>
+            <p class="mb-1"><i class="bi bi-telephone me-2"></i><span id="profilePhone">...</span></p>
+            <p><i class="bi bi-geo-alt me-2"></i><span id="profileAddress">...</span></p>
+          </div>
+
+          <div class="mt-4">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=doctor-profile-1" id="profileQR"
+              alt="Doctor QR" class="border rounded p-1 shadow-sm">
+            <p class="small text-muted mt-2 mb-0">Share your profile QR</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header"
+            style="background:linear-gradient(90deg,var(--theme-blue),var(--theme-blue-dark)); color:#fff;">
+            <h5 class="modal-title" id="modalTitle">Report Details</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-7">
+                <h5 class="mb-2 text-primary"><i class="bi bi-file-medical"></i> Patient Medical Report</h5>
+                <p><strong>Patient Name:</strong> <span id="modalPatientName"></span></p>
+                <p><strong>Diagnosis:</strong> <span id="modalDiagnosis"></span></p>
+                <p><strong>Appointment Booked:</strong> <span id="modalBooked"></span></p>
+                <p><strong>Last Visit:</strong> <span id="modalLastVisit"></span></p>
+                <p><strong>Doctor Notes:</strong> <span id="modalNotes"></span></p>
+
+                <table class="table table-sm mt-3">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Latest Value</th>
+                      <th>Normal Range</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Blood Sugar</td>
+                      <td id="modalSugar"></td>
+                      <td>70–140 mg/dL</td>
+                    </tr>
+                    <tr>
+                      <td>Blood Pressure</td>
+                      <td id="modalBP"></td>
+                      <td>120/80 mmHg</td>
+                    </tr>
+                    <tr>
+                      <td>Weight</td>
+                      <td id="modalWeight"></td>
+                      <td>—</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="alert alert-success mt-3" id="modalInsight" style="font-size:0.95rem"></div>
+              </div>
+
+              <div class="col-md-5">
+                <h6 class="text-secondary mb-2"><i class="bi bi-graph-up"></i> Measurement Trend</h6>
+                <canvas id="modalTrendChart" style="height:180px; max-height:35vh;"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header"
+            style="background:linear-gradient(90deg,var(--theme-blue),var(--theme-yellow));color:#fff;">
+            <h5 class="modal-title">Edit Profile</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editProfileForm" class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="editName">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Specialization</label>
+                <input type="text" class="form-control" id="editSpecialization">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="editEmail">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input type="text" class="form-control" id="editPhone">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Clinic Address</label>
+                <input type="text" class="form-control" id="editAddress">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Experience (yrs)</label>
+                <input type="number" class="form-control" id="editExperience">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Consultation Fee (₹)</label>
+                <input type="number" class="form-control" id="editFee">
+              </div>
+              <div class="col-12">
+                <label class="form-label">About / Bio</label>
+                <textarea class="form-control" id="editBio" rows="3"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Profile Picture</label>
+                <input type="file" class="form-control" id="editPhoto">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-success" id="saveProfileBtn">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      /*************************************
+       * ✅ Backend-connected Dashboard
+       *************************************/
+      const API_BASE = "http://localhost:3000/api/practitioner";
+      const token = localStorage.getItem("token");
+      const practitionerId = localStorage.getItem("user_id");
+
+      if (!token || !practitionerId) {
+        alert("Please login as a practitioner first!");
+        window.location.href = "login.html";
+      }
+
+      // ===============================
+      // LOAD DASHBOARD DATA FROM BACKEND
+      // ===============================
+      async function loadDashboard() {
+        try {
+          const res = await fetch(`${API_BASE}/dashboard`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const data = await res.json();
+
+          if (!data.success) {
+            console.error("Backend error:", data.message);
+            alert("Failed to load dashboard data!");
+            return;
+          }
+
+          // ===============================
+          // Populate Headers
+          // ===============================
+          // *** FIX: Check if data.practitioner exists before accessing name ***
+          const practitionerName = (data.practitioner && data.practitioner.name) ? data.practitioner.name : "Practitioner";
+          document.getElementById("practitionerNameHeader").textContent = practitionerName;
+          document.getElementById("welcomeHeader").textContent = `Welcome back, ${practitionerName}`;
+          document.getElementById("currentDate").textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+
+          // ===============================
+          // Populate Stats
+          // ===============================
+          document.getElementById("stat-today").textContent = data.stats.upcomingCount;
+          document.getElementById("stat-new").textContent = data.stats.totalPatients;
+          document.getElementById("stat-rev").textContent = `₹${data.stats.totalRevenue.toLocaleString()}`;
+          document.getElementById("revTotal").textContent = `₹${data.stats.totalRevenue.toLocaleString()}`;
+          document.getElementById("revPending").textContent = `₹${data.stats.pendingRevenue.toLocaleString()}`;
+          document.getElementById("revPatients").textContent = data.stats.totalPatients;
+
+          // ===============================
+          // Upcoming & Past Appointments
+          // ===============================
+          const upcomingBody = document.getElementById("upcomingBody");
+          const pastBody = document.getElementById("pastBody");
+          upcomingBody.innerHTML = "";
+          pastBody.innerHTML = "";
+
+          if (data.appointments.upcoming.length > 0) {
+            data.appointments.upcoming.forEach(appt => {
+              upcomingBody.innerHTML += `
+            <tr>
+              <td>${appt.userId?.name || "Unknown"}</td>
+              <td>${appt.date}</td>
+              <td>${appt.time}</td>
+              <td>${appt.type}</td>
+              <td><span class="badge badge-upcoming">${appt.status}</span></td>
+            </tr>`;
+            });
+          } else {
+            upcomingBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No upcoming appointments.</td></tr>`;
+          }
+
+          if (data.appointments.past.length > 0) {
+            data.appointments.past.forEach(appt => {
+              pastBody.innerHTML += `
+            <tr>
+              <td>${appt.userId?.name || "Unknown"}</td>
+              <td>${appt.date}</td>
+              <td>${appt.time}</td>
+              <td>${appt.type}</td>
+              <td><span class="badge badge-completed">${appt.status}</span></td>
+            </tr>`;
+            });
+          } else {
+            pastBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No past appointments.</td></tr>`;
+          }
+
+          // ===============================
+          // Patients List
+          // ===============================
+          // *** THIS IS THE FIX ***
+          // We now use data.patients and cross-reference with data.appointments.upcoming
+          //
+          const patientsList = document.getElementById("patientsList");
+          patientsList.innerHTML = "";
+
+          const upcomingAppointments = data.appointments.upcoming || [];
+
+          if (data.patients.length > 0) {
+            data.patients.forEach(patient => {
+              // Find the next appointment for this specific patient
+              const nextAppt = upcomingAppointments.find(appt =>
+                appt.userId?._id === patient._id
+              );
+
+              // Get the details, or use "—" as a fallback
+              const nextDate = nextAppt ? nextAppt.date : "—";
+              const nextTime = nextAppt ? nextAppt.time : "—";
+
+              const status = nextAppt
+                ? `<span class="badge badge-upcoming">Upcoming</span>`
+                : `<span class="badge badge-completed">Active</span>`;
+
+              patientsList.innerHTML += `
+                <tr>
+                  <td>${patient.name}</td>
+                  <td>${nextDate}</td>
+                  <td>${nextTime}</td>
+                  <td>${status}</td>
+                </tr>`;
+            });
+          } else {
+            patientsList.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No patients found.</td></tr>`;
+          }
+
+          // ===============================
+          // Reports Table
+          // ===============================
+          const reportsList = document.getElementById("reportsList");
+          reportsList.innerHTML = "";
+          if (data.reports.length > 0) {
+            data.reports.forEach(r => {
+              reportsList.innerHTML += `
+            <tr>
+              <td>${r.userId?.name || "Unknown"}</td>
+              <td>${r.diagnosis}</td>
+              <td>${r.booked || "—"}</td>
+              <td>${r.lastVisit || "—"}</td>
+              <td><button class="btn btn-sm btn-primary viewReportBtn" data-id="${r._id}">View</button></td>
+            </tr>`;
+            });
+          } else {
+            reportsList.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No reports found.</td></tr>`;
+          }
+
+          // ===============================
+          // Populate Profile Tab
+          // ===============================
+          // *** FIX: Check if data.practitioner exists ***
+          const p = data.practitioner || {};
+          const profile = p.profile || {};
+
+          document.getElementById("profileName").textContent = p.name || "Dr. ...";
+          document.getElementById("profileSpecialization").textContent = p.specialization || "Not specified";
+          document.getElementById("profileExperience").textContent = (p.experience || 0);
+          document.getElementById("profileFee").textContent = "₹" + (p.fees || 0);
+          document.getElementById("profileRating").textContent = (p.rating || 4.5) + " / 5";
+          document.getElementById("profileBio").textContent = p.bio || "No bio set yet.";
+          document.getElementById("profileEmail").textContent = p.email || "No email";
+          document.getElementById("profilePhone").textContent = profile.phone || "Not set";
+          document.getElementById("profileAddress").textContent = profile.address || "Not set";
+          document.getElementById("profileImg").src = profile.photo || "default-profile.png";
+
+          // QR code
+          document.getElementById("profileQR").src = `https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=practitioner-${p._id || 'unknown'}`;
+
+          // ===== STATS =====
+          document.getElementById("statPatientsProfile").textContent = data.stats.totalPatients || 0;
+          document.getElementById("statAppointmentsProfile").textContent = data.stats.upcomingCount + data.stats.pastCount || 0;
+          document.getElementById("statRevenueProfile").textContent = `₹${(data.stats.totalRevenue || 0).toLocaleString()}`;
+
+          // ===== EDIT PROFILE MODAL =====
+          document.getElementById("editName").value = p.name || "";
+          document.getElementById("editSpecialization").value = p.specialization || "";
+          document.getElementById("editEmail").value = p.email || "";
+          document.getElementById("editPhone").value = profile.phone || "";
+          document.getElementById("editAddress").value = profile.address || "";
+          document.getElementById("editExperience").value = p.experience || "";
+          document.getElementById("editFee").value = p.fees || "";
+          document.getElementById("editBio").value = p.bio || "";
+
+
+          // ===============================
+          // Charts — Backend-Driven
+          // ===============================
+          const monthlyLabels = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+          ];
+
+          const monthlyRevenue = {};
+          const monthlyAppointments = {};
+          data.payments.forEach(p => {
+            const d = new Date(p.date);
+            const m = d.getMonth();
+            if (p.status === 'paid') {
+              monthlyRevenue[m] = (monthlyRevenue[m] || 0) + p.amount;
+            }
+          });
+          data.appointments.past.concat(data.appointments.upcoming).forEach(a => {
+            const d = new Date(a.date);
+            const m = d.getMonth();
+            monthlyAppointments[m] = (monthlyAppointments[m] || 0) + 1;
+          });
+
+          const revenueValues = monthlyLabels.map((_, i) => monthlyRevenue[i] || 0);
+          const appointmentValues = monthlyLabels.map((_, i) => monthlyAppointments[i] || 0);
+
+          createCharts(monthlyLabels, revenueValues, appointmentValues, data.patients.length);
+
+          // ===============================
+          // Reports Modal — Load Details
+          // ===============================
+          document.addEventListener("click", async (e) => {
+            if (e.target && e.target.classList.contains("viewReportBtn")) {
+              const id = e.target.getAttribute("data-id");
+              const report = data.reports.find(r => r._id === id);
+              if (!report) return;
+              fillReportModal(report);
+            }
+          });
+
+        } catch (err) {
+          console.error("Dashboard load error:", err);
+          alert("Failed to connect to backend!");
+        }
+      }
+
+      // ===============================
+      // Charts Setup (Chart.js)
+      // ===============================
+      function createCharts(labels, revenueData, appointmentData, totalPatients) {
+        // === THEME CHANGE ===
+        const palette = {
+          blue: '#0d6efd',
+          yellow: '#ffc107',
+          coral: '#ff6f91'
+        };
+
+        // Monthly Revenue
+        new Chart(document.getElementById('monthlyRevenue'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Revenue (₹)',
+              data: revenueData,
+              borderColor: palette.blue,
+              backgroundColor: 'rgba(13, 110, 253, 0.15)',
+              tension: 0.35,
+              pointRadius: 4,
+              pointBackgroundColor: palette.blue,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { ticks: { callback: v => '₹' + v } } }
+          }
+        });
+
+        // Appointments per Month
+        new Chart(document.getElementById('appointmentsPerMonth'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Appointments',
+              data: appointmentData,
+              borderColor: palette.yellow, /* Was coral */
+              backgroundColor: 'rgba(255, 193, 7, 0.15)', /* Was coral */
+              tension: 0.3,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+
+                // Patient Type Pie (simple split)
+                new Chart(document.getElementById('patientTypePie'), {
+          type: 'doughnut',
+          data: {
+            labels: ['New Patients', 'Returning Patients'],
+            datasets: [{
+              data: [totalPatients * 0.3, totalPatients * 0.7], // Example split
+              backgroundColor: [palette.yellow, palette.blue],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return `${context.label}: ${context.raw}`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+        
+
+        // ===============================
+        // Report Modal Function
+        // ===============================
+        let modalChart = null;
+
+        function fillReportModal(report) {
+          const modal = new bootstrap.Modal(document.getElementById("reportModal"));
+
+          // Basic details
+          document.getElementById("modalTitle").textContent = `Report — ${report.userId?.name}`;
+          document.getElementById("modalPatientName").textContent = report.userId?.name;
+          document.getElementById("modalDiagnosis").textContent = report.diagnosis || "—";
+          document.getElementById("modalBooked").textContent = report.booked || "—";
+          document.getElementById("modalLastVisit").textContent = report.lastVisit || "—";
+          document.getElementById("modalNotes").textContent = report.notes || "—";
+
+          // Handle if no measurements
+          if (!report.measurements || report.measurements.length === 0) {
+            document.getElementById("modalSugar").textContent = "—";
+            document.getElementById("modalBP").textContent = "—";
+            document.getElementById("modalWeight").textContent = "—";
+            document.getElementById("modalInsight").textContent = "No measurement data available.";
+            if (modalChart) modalChart.destroy();
+            modal.show();
+            return;
+          }
+
+          // Latest measurement values
+          const latest = report.measurements[report.measurements.length - 1];
+          document.getElementById("modalSugar").textContent = `${latest.sugar || "—"} mg/dL`;
+          document.getElementById("modalBP").textContent = `${latest.systolic || "—"}/${latest.diastolic || "—"} mmHg`;
+          document.getElementById("modalWeight").textContent = `${latest.weight || "—"} kg`;
+
+          // Health trend insights
+          const first = report.measurements[0];
+          const sugarTrend = (latest.sugar ?? 0) - (first.sugar ?? 0);
+          const bpTrend = (latest.systolic ?? 0) - (first.systolic ?? 0);
+          const weightTrend = (latest.weight ?? 0) - (first.weight ?? 0);
+
+          const insights = [];
+          insights.push(sugarTrend < 0 ? "Blood sugar improving" : sugarTrend > 0 ? "Blood sugar rising" : "Blood sugar stable");
+          insights.push(bpTrend < 0 ? "BP improving" : bpTrend > 0 ? "BP rising" : "BP stable");
+          insights.push(weightTrend < 0 ? "Weight decreasing" : weightTrend > 0 ? "Weight increasing" : "Weight stable");
+
+          document.getElementById("modalInsight").textContent = insights.join(" • ");
+
+          // Chart data
+          const labels = report.measurements.map(m => m.date || "");
+          const sugarData = report.measurements.map(m => m.sugar || null);
+          const systolicData = report.measurements.map(m => m.systolic || null);
+          const weightData = report.measurements.map(m => m.weight || null);
+
+          // Render trend chart
+          const ctx = document.getElementById("modalTrendChart");
+          if (modalChart) modalChart.destroy();
+
+          modalChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels,
+              datasets: [
+                /* === THEME CHANGE === */
+                { label: "Blood Sugar", data: sugarData, borderColor: "#ffc107", tension: 0.3, fill: false }, /* Updated yellow */
+                { label: "Systolic BP", data: systolicData, borderColor: "#0d6efd", tension: 0.3, fill: false }, /* Updated blue */
+                { label: "Weight", data: weightData, borderColor: "#ff6f91", tension: 0.3, fill: false } /* Kept coral */
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: "bottom" } },
+              scales: { y: { beginAtZero: false } }
+            }
+          });
+
+          modal.show();
+        }
+
+        // ===============================
+        // Sidebar Navigation
+        // ===============================
+        const sidebarItems = document.querySelectorAll('.nav-list li[data-section]');
+        const sections = ['dashboard', 'patients', 'revenue', 'reports', 'profile'];
+        sidebarItems.forEach(item => {
+          item.addEventListener('click', () => {
+            sidebarItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            const sec = item.getAttribute('data-section');
+            sections.forEach(s => {
+              document.getElementById(s).style.display = s === sec ? '' : 'none';
+            });
+          });
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+          localStorage.clear();
+          window.location.href = "login.html";
+        });
+
+        loadDashboard();
+    </script>
+
+
+
+    <script>
+        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+          const updated = {
+            name: document.getElementById("editName").value,
+            specialization: document.getElementById("editSpecialization").value,
+            email: document.getElementById("editEmail").value,
+            phone: document.getElementById("editPhone").value,
+            address: document.getElementById("editAddress").value,
+            experience: parseInt(document.getElementById("editExperience").value) || 0,
+            fees: parseFloat(document.getElementById("editFee").value) || 0,
+            bio: document.getElementById("editBio").value
+          };
+
+          const btn = document.getElementById("saveProfileBtn");
+          btn.disabled = true;
+
+          try {
+            const res = await fetch(`${API_BASE}/update-profile/${practitionerId}`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify(updated)
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+              alert("✅ Profile updated successfully!");
+              loadDashboard();
+              document.getElementById("closeEditModal")?.click();
+            } else {
+              alert("⚠️ Update failed: " + data.message);
+            }
+
+          } catch (err) {
+            console.error(err);
+            alert("Server error updating profile.");
+          } finally {
+            btn.disabled = false;
+          }
+        });
+
+    </script>
+
+
+
+</body>
+
+</html>
